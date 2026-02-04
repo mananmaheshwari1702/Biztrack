@@ -1,0 +1,46 @@
+import type { OrgNode } from '../types';
+import { logger } from './logger';
+
+/**
+ * Reconstructs the tree structure from a flat array of nodes.
+ * @param nodes Flat list of OrgNodes (children array might be empty or partial).
+ * @param rootUserId The current user's ID, used to identify the root node if needed.
+ * @returns The root OrgNode with its children populated recursively.
+ */
+export const buildOrgTree = (nodes: OrgNode[]): OrgNode | null => {
+    if (!nodes || nodes.length === 0) return null;
+
+    // Create a map for constant time lookup
+    const nodeMap = new Map<string, OrgNode>();
+
+    // Initialize map and clear children to ensure fresh reconstruction
+    nodes.forEach(node => {
+        // Create a shallow copy to avoid mutating original immutable state objects if they come from strict stores
+        nodeMap.set(node.id, { ...node, children: [] });
+    });
+
+    let rootDetails: OrgNode | null = null;
+
+    // Build the tree
+    nodeMap.forEach(node => {
+        if (!node.parentId) {
+            // This is a potential root. 
+            // In our schema, the top-level user might have parentId = 'root' or null.
+            // If there are multiple matching this (which shouldn't happen for a single user's org view ideally), 
+            // we'll take the first one or logic specific to identifying the "Me" node.
+            if (!rootDetails) {
+                rootDetails = node;
+            }
+        } else {
+            const parent = nodeMap.get(node.parentId);
+            if (parent) {
+                parent.children.push(node);
+            } else {
+                // Orphaned node or parent not in list
+                logger.warn(`Orphaned node found: ${node.name} (${node.id}) with parentId: ${node.parentId}`);
+            }
+        }
+    });
+
+    return rootDetails;
+};
