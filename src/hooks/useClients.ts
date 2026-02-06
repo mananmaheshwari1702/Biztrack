@@ -6,7 +6,6 @@ import { firebaseService } from '../services/firebaseService';
 import { useAuth } from '../context/AuthContext';
 import type { Client } from '../types';
 import { queryCache } from '../utils/cache';
-import { useToast } from '../context/ToastContext';
 
 export const useClients = (
     filterType: 'All' | 'Prospect' | 'User' | 'Associate' | 'Supervisor' = 'All',
@@ -16,7 +15,6 @@ export const useClients = (
     pageSize: number = 50
 ) => {
     const { currentUser } = useAuth();
-    const { success, error: showError } = useToast();
 
     // Construct Query Constraints
     const constraints: import('firebase/firestore').QueryConstraint[] = [];
@@ -64,7 +62,10 @@ export const useClients = (
     // Calculate total pages based on fetched data
     const [totalCount, setTotalCount] = useState(0);
 
-    // Effect: Fetch total count when filters change (Debounced optional, but query is cheap)
+    // Track mutations to refresh count reactively
+    const [countVersion, setCountVersion] = useState(0);
+
+    // Effect: Fetch total count when filters change OR after mutations
     useEffect(() => {
         if (!currentUser) return;
 
@@ -87,20 +88,19 @@ export const useClients = (
 
         fetchCount();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentUser, filterType, searchQuery]); // Re-run when filters change
+    }, [currentUser, filterType, searchQuery, countVersion]); // Re-run when filters change OR after mutations
 
     const addClient = useCallback(async (client: Client) => {
         if (!currentUser) return;
 
         try {
             await firebaseService.addClient(currentUser.uid, client);
-            success("Client added successfully");
             refresh();
+            setCountVersion(v => v + 1); // Trigger count refresh
         } catch (err) {
-            showError("Failed to add client");
             throw err;
         }
-    }, [currentUser, refresh, success, showError]);
+    }, [currentUser, refresh]);
 
     const updateClient = useCallback(async (client: Client) => {
         if (!currentUser) return;
@@ -119,17 +119,15 @@ export const useClients = (
 
         try {
             await firebaseService.updateClient(currentUser.uid, client);
-            success("Client updated");
         } catch (err) {
             // Rollback
             if (cached) {
                 await queryCache.set(key, previousData, currentUser.uid);
                 refresh();
             }
-            showError("Failed to update client");
             throw err;
         }
-    }, [currentUser, refresh, success, showError, filterType, searchQuery, sortBy]);
+    }, [currentUser, refresh, filterType, searchQuery, sortBy]);
 
     const deleteClient = useCallback(async (clientId: string) => {
         if (!currentUser) return;
@@ -147,53 +145,48 @@ export const useClients = (
 
         try {
             await firebaseService.deleteClient(currentUser.uid, clientId);
-            success("Client deleted");
+            setCountVersion(v => v + 1); // Trigger count refresh
         } catch (err) {
             // Rollback
             if (cached) {
                 await queryCache.set(key, previousData, currentUser.uid);
                 refresh();
             }
-            showError("Failed to delete client");
             throw err;
         }
-    }, [currentUser, refresh, success, showError, filterType, searchQuery, sortBy]);
+    }, [currentUser, refresh, filterType, searchQuery, sortBy]);
 
     const bulkDeleteClients = useCallback(async (ids: string[]) => {
         if (!currentUser) return;
         try {
             await firebaseService.bulkDeleteClients(currentUser.uid, ids);
-            success("Clients deleted");
             refresh();
+            setCountVersion(v => v + 1); // Trigger count refresh
         } catch (err) {
-            showError("Failed to bulk delete");
             throw err;
         }
-    }, [currentUser, refresh, success, showError]);
+    }, [currentUser, refresh]);
 
     const bulkUpdateClients = useCallback(async (ids: string[], updates: Partial<Client>) => {
         if (!currentUser) return;
         try {
             await firebaseService.bulkUpdateClients(currentUser.uid, ids, updates);
-            success("Clients updated");
             refresh();
         } catch (err) {
-            showError("Failed to bulk update");
             throw err;
         }
-    }, [currentUser, refresh, success, showError]);
+    }, [currentUser, refresh]);
 
     const bulkAddClients = useCallback(async (newClients: Client[]) => {
         if (!currentUser) return;
         try {
             await firebaseService.bulkAddClients(currentUser.uid, newClients);
-            success("Clients imported");
             refresh();
+            setCountVersion(v => v + 1); // Trigger count refresh
         } catch (err) {
-            showError("Failed to import clients");
             throw err;
         }
-    }, [currentUser, refresh, success, showError]);
+    }, [currentUser, refresh]);
 
     return {
         clients,

@@ -15,6 +15,7 @@ import { faUsers, faPhone } from '@fortawesome/free-solid-svg-icons';
 import type { Client } from '../types';
 import { fromInputDate } from '../utils/dateUtils';
 import LoadingScreen from '../components/common/LoadingScreen';
+import { useToast } from '../context/ToastContext';
 
 const Dashboard: React.FC = () => {
     const {
@@ -31,12 +32,12 @@ const Dashboard: React.FC = () => {
         loadingMoreDue,
         loadingMoreTasks
     } = useDashboardData();
-    const { currentUser } = useAuth(); // Standard import
+    const { currentUser } = useAuth();
+    const { success, error } = useToast();
 
     // Data Migration: Normalize Client Names (Runs once)
     React.useEffect(() => {
         if (currentUser) {
-            // Lazy load migration service
             import('../services/migrationService').then(mod => {
                 mod.runDataMigration(currentUser.uid);
             });
@@ -83,10 +84,12 @@ const Dashboard: React.FC = () => {
 
         try {
             await updateClient(updatedClient);
+            success('Follow-Up Logged', 'Client status has been updated successfully.');
             refresh();
             setSelectedClientForOutcome(null);
-        } catch (error) {
-            console.error("Failed to update client outcome", error);
+        } catch (err) {
+            console.error("Failed to update client outcome", err);
+            error('Update Failed', 'Failed to save call outcome. Please try again.');
         }
     };
 
