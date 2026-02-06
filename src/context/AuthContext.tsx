@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import {
     createUserWithEmailAndPassword,
@@ -43,6 +43,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
+    // Ref to hold the resolver for the auth ready promise
+    // This allows login() to wait for onAuthStateChanged to complete
+    const authReadyResolverRef = useRef<((value: void) => void) | null>(null);
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -66,9 +70,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 setCurrentUser(null);
             }
             setLoading(false);
+
+            // Resolve the auth ready promise if someone is waiting
+            if (authReadyResolverRef.current) {
+                authReadyResolverRef.current();
+                authReadyResolverRef.current = null;
+            }
         });
         return unsubscribe;
     }, []);
+
+    // Helper to wait for auth state to be ready after a login/signup
+    const waitForAuthReady = (): Promise<void> => {
+        return new Promise((resolve) => {
+            authReadyResolverRef.current = resolve;
+        });
+    };
 
     const signup = async (email: string, password: string, name: string) => {
         const normalizedEmail = normalizeEmail(email);
@@ -140,7 +157,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const normalizedEmail = normalizeEmail(email);
         const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
         await setPersistence(auth, persistence);
+
+        // Set up the auth ready promise BEFORE signing in
+        const authReady = waitForAuthReady();
         await signInWithEmailAndPassword(auth, normalizedEmail, password);
+        // Wait for onAuthStateChanged to complete and set currentUser
+        await authReady;
     };
 
     const logout = async () => {
