@@ -12,37 +12,37 @@ const TaskStatsCard: React.FC<TaskStatsCardProps> = ({ overdue, pending, complet
     const activeTotal = overdue + pending;
 
     return (
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-6 flex flex-col justify-between min-h-[140px] md:min-h-[152px] shadow-sm hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-shadow duration-200">
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col justify-between min-h-[140px] shadow-sm hover:shadow-md transition-all duration-200 group">
             <div className="flex justify-between items-start gap-4 mb-4">
                 <div className="min-w-0 flex-1">
-                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1.5">
+                    <p className="text-xs font-heading font-bold text-slate-500 uppercase tracking-tight mb-2">
                         Tasks
                     </p>
-                    <p className="text-2xl md:text-3xl font-semibold text-slate-900 tabular-nums tracking-tight">
+                    <p className="text-3xl font-bold text-slate-900 tabular-nums tracking-tight font-sans">
                         {activeTotal}
-                        <span className="text-sm font-normal text-slate-400 ml-1.5">active</span>
+                        <span className="text-sm font-normal text-slate-400 ml-2">active</span>
                     </p>
                 </div>
                 <div
-                    className="w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-slate-100 text-slate-600"
+                    className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-slate-50 text-slate-600 transition-transform group-hover:scale-110"
                     aria-hidden
                 >
-                    <FontAwesomeIcon icon={faTasks} className="text-lg md:text-xl" />
+                    <FontAwesomeIcon icon={faTasks} className="text-xl" />
                 </div>
             </div>
             {/* Compact single-row breakdown */}
-            <div className="flex items-center gap-3 flex-wrap">
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 bg-red-50 px-2.5 py-1 rounded-lg">
+            <div className="flex items-center gap-2 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-red-600 bg-red-50 px-2.5 py-1 rounded-md border border-red-100">
                     <FontAwesomeIcon icon={faExclamationCircle} className="text-[10px]" />
-                    {overdue} overdue
+                    {overdue}
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg">
+                <span className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-100">
                     <FontAwesomeIcon icon={faClock} className="text-[10px]" />
-                    {pending} due soon
+                    {pending}
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">
+                <span className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-100">
                     <FontAwesomeIcon icon={faCheck} className="text-[10px]" />
-                    {completed} done
+                    {completed}
                 </span>
             </div>
         </div>

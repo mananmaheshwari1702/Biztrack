@@ -181,14 +181,14 @@ const ClientModal: React.FC<ClientModalProps> = ({ isOpen, onClose, onSave, init
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all duration-300 overflow-y-auto">
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-scale-in my-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all duration-300 overflow-y-auto font-sans">
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-scale-in my-auto border border-slate-100">
                 {/* Header */}
-                <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-white">
-                    <h2 className="text-xl font-bold text-slate-800 tracking-tight">
+                <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50/50">
+                    <h2 className="text-xl font-bold text-slate-900 tracking-tight font-heading">
                         {initialClient ? 'Edit Client' : 'Add New Client'}
                     </h2>
-                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors p-2 rounded-full hover:bg-slate-50">
+                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors p-2 rounded-lg hover:bg-slate-100">
                         <FontAwesomeIcon icon={faTimes} className="text-lg" />
                     </button>
                 </div>
@@ -197,23 +197,23 @@ const ClientModal: React.FC<ClientModalProps> = ({ isOpen, onClose, onSave, init
                     <div className="flex flex-col md:flex-row gap-8 mb-8 items-start">
                         {/* 1) Profile Photo Upload */}
                         <div className="flex-shrink-0 relative group self-center md:self-start">
-                            <div className="w-24 h-24 rounded-full bg-slate-100 border-2 border-slate-200 flex items-center justify-center overflow-hidden">
+                            <div className="w-24 h-24 rounded-2xl bg-slate-50 border-2 border-slate-100 flex items-center justify-center overflow-hidden shadow-sm group-hover:border-primary/20 transition-colors">
                                 {formData.profileImage ? (
                                     <img src={formData.profileImage} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
                                     <FontAwesomeIcon icon={faUser} className="text-4xl text-slate-300" />
                                 )}
                             </div>
-                            <label className="absolute bottom-0 right-0 bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-blue-700 transition-colors border-2 border-white">
-                                <FontAwesomeIcon icon={faPlus} className="text-xs" />
+                            <label className="absolute -bottom-2 -right-2 bg-white text-primary w-9 h-9 rounded-xl flex items-center justify-center cursor-pointer shadow-md hover:shadow-lg transition-all border border-slate-100 hover:text-blue-700 hover:scale-105">
+                                <FontAwesomeIcon icon={faPlus} className="text-sm" />
                                 <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                             </label>
                         </div>
 
                         {/* 2) Full Name (Required) */}
-                        <div className="flex-grow w-full space-y-4">
+                        <div className="flex-grow w-full space-y-5">
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 font-mono">
                                     Full Name <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -222,21 +222,20 @@ const ClientModal: React.FC<ClientModalProps> = ({ isOpen, onClose, onSave, init
                                     placeholder="e.g. Sarah Jenkins"
                                     value={formData.clientName}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border rounded-xl outline-none transition-all ${errors.clientName ? 'border-red-300 bg-red-50 focus:border-red-500' : 'border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10'}`}
+                                    className={`w-full px-4 py-3 border rounded-xl outline-none transition-all font-medium text-slate-800 ${errors.clientName ? 'border-red-300 bg-red-50 focus:border-red-500' : 'border-slate-200 bg-slate-50/50 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
                                 />
-                                {errors.clientName && <p className="text-red-500 text-xs mt-1 font-medium">{errors.clientName}</p>}
+                                {errors.clientName && <p className="text-red-500 text-xs mt-1 font-medium flex items-center gap-1"><FontAwesomeIcon icon={faTimes} /> {errors.clientName}</p>}
                             </div>
-
-
                         </div>
                     </div>
 
                     {/* 3) Contact Information Card */}
-                    <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 mb-8">
-                        <h3 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
-                            Contact Information
+                    <div className="bg-white rounded-xl p-6 border border-slate-200 mb-8 shadow-sm">
+                        <h3 className="text-sm font-bold text-slate-800 mb-5 flex items-center gap-2 font-mono uppercase tracking-wider border-b border-slate-100 pb-2">
+                            <span className="bg-blue-100 text-primary w-6 h-6 rounded flex items-center justify-center text-[10px]"><FontAwesomeIcon icon={faEnvelope} /></span>
+                            Contact Details
                         </h3>
-                        <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Mobile Number */}
                             <div>
                                 <div className="mb-1">
@@ -249,10 +248,9 @@ const ClientModal: React.FC<ClientModalProps> = ({ isOpen, onClose, onSave, init
                                 </div>
                             </div>
 
-
                             {/* Email Address */}
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Email Address</label>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 font-mono">Email Address</label>
                                 <div className="relative">
                                     <FontAwesomeIcon icon={faEnvelope} className="absolute left-4 top-3.5 text-slate-400" />
                                     <input
@@ -261,7 +259,7 @@ const ClientModal: React.FC<ClientModalProps> = ({ isOpen, onClose, onSave, init
                                         placeholder="client@example.com"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className={`w-full pl-10 pr-4 py-3 border rounded-xl outline-none transition-all ${errors.email ? 'border-red-300 bg-red-50' : 'border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 bg-white'}`}
+                                        className={`w-full pl-10 pr-4 py-3 border rounded-xl outline-none transition-all ${errors.email ? 'border-red-300 bg-red-50' : 'border-slate-200 bg-slate-50/50 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
                                     />
                                 </div>
                                 {errors.email && <p className="text-red-500 text-xs mt-1 font-medium">{errors.email}</p>}
@@ -272,13 +270,13 @@ const ClientModal: React.FC<ClientModalProps> = ({ isOpen, onClose, onSave, init
                     {/* 4) Follow-up Settings Row */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Follow-up Frequency</label>
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 font-mono">Follow-up Frequency</label>
                             <div className="relative">
                                 <select
                                     name="frequency"
                                     value={formData.frequency}
                                     onChange={handleChange}
-                                    className="w-full appearance-none px-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 bg-white cursor-pointer transition-all"
+                                    className="w-full appearance-none px-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 bg-white cursor-pointer transition-all font-medium text-slate-700"
                                 >
                                     <option value="Daily">Daily</option>
                                     <option value="Weekly">Weekly</option>
@@ -291,7 +289,7 @@ const ClientModal: React.FC<ClientModalProps> = ({ isOpen, onClose, onSave, init
                             </div>
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Next Call Date</label>
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 font-mono">Next Call Date</label>
                             <div className="relative">
                                 <FontAwesomeIcon icon={faCalendar} className="absolute left-4 top-3.5 text-slate-400" />
                                 <input
@@ -300,7 +298,7 @@ const ClientModal: React.FC<ClientModalProps> = ({ isOpen, onClose, onSave, init
                                     value={formData.nextFollowUpDate}
                                     onChange={e => setFormData({ ...formData, nextFollowUpDate: e.target.value })}
                                     onClick={e => e.currentTarget.showPicker()}
-                                    className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 bg-white cursor-pointer transition-all"
+                                    className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 bg-white cursor-pointer transition-all font-medium text-slate-700"
                                 />
                             </div>
                         </div>
@@ -308,13 +306,13 @@ const ClientModal: React.FC<ClientModalProps> = ({ isOpen, onClose, onSave, init
 
                     {/* 5) Type Dropdown */}
                     <div className="mb-8">
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Client Type</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 font-mono">Client Type</label>
                         <div className="relative">
                             <select
                                 name="clientType"
                                 value={formData.clientType}
                                 onChange={handleChange}
-                                className="w-full appearance-none px-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 bg-white cursor-pointer transition-all"
+                                className="w-full appearance-none px-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 bg-white cursor-pointer transition-all font-medium text-slate-700"
                             >
                                 <option value="Prospect">Prospect</option>
                                 <option value="Associate">Associate</option>
@@ -329,29 +327,29 @@ const ClientModal: React.FC<ClientModalProps> = ({ isOpen, onClose, onSave, init
 
                     {/* 6) Notes Text Area */}
                     <div className="mb-8">
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Initial Context & Notes</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 font-mono">Initial Context & Notes</label>
                         <textarea
                             name="notes"
                             value={formData.notes}
                             onChange={handleChange}
                             rows={3}
                             placeholder="Enter any important details regarding this client..."
-                            className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 bg-white resize-none transition-all"
+                            className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 bg-white resize-none transition-all font-medium text-slate-700 placeholder:text-slate-400"
                         ></textarea>
                     </div>
 
                     {/* 7) Modal Footer Buttons */}
-                    <div className="flex gap-4 pt-4 border-t border-slate-100">
+                    <div className="flex gap-4 pt-6 border-t border-slate-100 mt-2">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 py-3 text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl font-bold transition duration-200"
+                            className="flex-1 py-3 text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl font-bold transition duration-200 uppercase tracking-wide text-xs"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 transition duration-200 transform hover:scale-[1.01] active:scale-[0.99]"
+                            className="flex-1 py-3 bg-primary hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 transition duration-200 transform hover:scale-[1.01] active:scale-[0.99] uppercase tracking-wide text-xs"
                         >
                             {initialClient ? 'Update Client' : 'Add Client'}
                         </button>

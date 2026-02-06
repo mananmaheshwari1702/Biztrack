@@ -6,9 +6,7 @@ export default {
   ],
   theme: {
     extend: {
-      colors: {
-        'accent-blue': '#2563eb', // Example blue, I can refine this later
-      },
+      // Colors and other theme extensions are now handled in index.css via @theme
     },
   },
   plugins: [],

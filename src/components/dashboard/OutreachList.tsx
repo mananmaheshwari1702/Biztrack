@@ -101,50 +101,49 @@ const OutreachList: React.FC<OutreachListProps> = ({
 
     return (
         <section
-            className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col min-h-0"
+            className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col min-h-0 h-full"
             aria-labelledby="outreach-heading"
         >
-            <div className="px-6 py-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+            <div className="px-6 py-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50">
                 <h2
                     id="outreach-heading"
-                    className="text-base font-semibold text-slate-900 tracking-tight flex items-center gap-2"
+                    className="text-base font-bold text-slate-800 tracking-tight flex items-center gap-3 font-mono"
                 >
                     <span
-                        className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0"
+                        className="w-8 h-8 rounded-lg bg-white border border-slate-200 text-primary flex items-center justify-center flex-shrink-0 shadow-sm"
                         aria-hidden
                     >
                         <FontAwesomeIcon icon={faPhone} className="text-sm" />
                     </span>
-                    Today&apos;s outreach
+                    TODAY'S OUTREACH
                 </h2>
                 <span
-                    className={`text-xs font-semibold px-3 py-1.5 rounded-full ${
-                        allCaughtUp
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : 'bg-amber-100 text-amber-700'
-                    }`}
+                    className={`text-[10px] font-mono uppercase tracking-wider font-bold px-3 py-1.5 rounded-full border ${allCaughtUp
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                            : 'bg-amber-50 text-amber-700 border-amber-100'
+                        }`}
                 >
-                    {allCaughtUp ? 'All caught up' : `${totalCount} pending`}
+                    {allCaughtUp ? 'All caught up' : `${totalCount} PENDING`}
                 </span>
             </div>
 
             <div
                 ref={scrollContainerRef}
-                className="flex-1 overflow-y-auto min-h-0 max-h-[min(60vh,520px)] overflow-x-hidden"
+                className="flex-1 overflow-y-auto min-h-0 max-h-[min(60vh,520px)] overflow-x-hidden font-sans"
                 aria-busy={loading}
                 aria-label="Outreach list"
             >
                 {clients.length === 0 && !loading ? (
-                    <div className="px-6 py-12 text-center">
-                        <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center mx-auto mb-4">
+                    <div className="px-6 py-16 text-center">
+                        <div className="w-16 h-16 rounded-full bg-slate-50 text-slate-300 flex items-center justify-center mx-auto mb-4 border border-slate-100">
                             <FontAwesomeIcon icon={faCheckCircle} className="text-2xl" />
                         </div>
-                        <p className="text-sm font-medium text-slate-600">No calls due</p>
-                        <p className="text-xs text-slate-400 mt-1">You&apos;re all caught up.</p>
+                        <p className="text-base font-medium text-slate-900">No calls due</p>
+                        <p className="text-sm text-slate-500 mt-1">You&apos;re all caught up for today.</p>
                     </div>
                 ) : (
                     <>
-                        <ul className="divide-y divide-slate-100 pl-6" role="list">
+                        <ul className="divide-y divide-slate-100" role="list">
                             {sortedClients.map((client) => {
                                 const status = getFollowUpStatus(client.nextFollowUpDate, todayStr);
                                 const isOverdue = status === 'overdue';
@@ -152,86 +151,91 @@ const OutreachList: React.FC<OutreachListProps> = ({
                                 return (
                                     <li
                                         key={client.id}
-                                        className="relative py-4 pr-6 overflow-hidden hover:bg-slate-50/70 transition-colors -ml-6 pl-6"
+                                        className="relative p-4 hover:bg-slate-50 transition-all duration-200 group"
                                     >
-                                        {/* Left indicator bar: red = overdue, yellow = due today (4px, full height) */}
-                                        <div
-                                            className={`absolute left-0 top-0 bottom-0 w-1 rounded-l flex-shrink-0 ${
-                                                isOverdue
-                                                    ? 'bg-red-500'
-                                                    : isDueToday
-                                                    ? 'bg-amber-400'
-                                                    : 'bg-slate-200'
-                                            }`}
-                                            aria-hidden
-                                            role="presentation"
-                                        />
-                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pl-4">
+                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                             <div className="flex items-start gap-4 min-w-0">
-                                                <div className="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 font-semibold text-sm overflow-hidden border border-slate-200/80 flex-shrink-0">
-                                                    {client.profileImage ? (
-                                                        <img
-                                                            src={client.profileImage}
-                                                            alt=""
-                                                            className="w-full h-full object-cover"
-                                                        />
-                                                    ) : (
-                                                        client.clientName.charAt(0)
-                                                    )}
+                                                <div className="relative">
+                                                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-sm overflow-hidden border border-slate-200 flex-shrink-0 shadow-sm">
+                                                        {client.profileImage ? (
+                                                            <img
+                                                                src={client.profileImage}
+                                                                alt=""
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        ) : (
+                                                            client.clientName.charAt(0)
+                                                        )}
+                                                    </div>
+                                                    {/* Status Dot */}
+                                                    <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center ${isOverdue ? 'bg-red-500' : 'bg-amber-400'
+                                                        }`}></div>
                                                 </div>
-                                                <div className="min-w-0">
+
+                                                <div className="min-w-0 flex-1 pt-0.5">
                                                     <div className="flex items-center gap-2 flex-wrap">
-                                                        <p className="font-semibold text-slate-900 truncate">
+                                                        <p className="font-bold text-slate-900 truncate text-base group-hover:text-primary transition-colors">
                                                             {client.clientName}
                                                         </p>
                                                         {isOverdue && (
-                                                            <span className="text-[10px] font-bold uppercase tracking-wide text-red-700 bg-red-100 px-2 py-0.5 rounded shrink-0">
+                                                            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-100 shrink-0">
                                                                 Overdue
                                                             </span>
                                                         )}
                                                         {isDueToday && (
-                                                            <span className="text-[10px] font-semibold uppercase tracking-wide text-amber-800 bg-amber-100 px-2 py-0.5 rounded shrink-0">
+                                                            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-100 shrink-0">
                                                                 Due today
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+
+                                                    <div className="flex items-center gap-4 text-xs text-slate-500 mt-1">
                                                         {getWhatsAppLink(client.mobile) ? (
                                                             <a
                                                                 href={getWhatsAppLink(client.mobile)!}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="inline-flex items-center gap-1 hover:text-emerald-600 transition-colors truncate"
+                                                                className="inline-flex items-center gap-1.5 hover:text-emerald-600 transition-colors truncate font-medium bg-slate-50 px-2 py-0.5 rounded border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50"
                                                                 onClick={(e) => e.stopPropagation()}
                                                             >
-                                                                <FontAwesomeIcon icon={faWhatsapp} />
+                                                                <FontAwesomeIcon icon={faWhatsapp} className="text-emerald-500" />
                                                                 <span className="truncate">{client.mobile}</span>
                                                             </a>
                                                         ) : (
-                                                            <span className="inline-flex items-center gap-1 truncate">
-                                                                <FontAwesomeIcon icon={faPhone} />
+                                                            <span className="inline-flex items-center gap-1.5 truncate font-medium bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                                                                <FontAwesomeIcon icon={faPhone} className="text-slate-400" />
                                                                 {client.mobile}
                                                             </span>
                                                         )}
+
+                                                        {client.notes && (
+                                                            <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-slate-300"></span>
+                                                        )}
+
+                                                        {client.notes && (
+                                                            <p className="hidden sm:block truncate italic max-w-[200px] text-slate-400">
+                                                                "{client.notes}"
+                                                            </p>
+                                                        )}
                                                     </div>
-                                                    {client.notes && (
-                                                        <p className="text-xs text-slate-400 mt-1 line-clamp-1 italic truncate">
-                                                            &ldquo;{client.notes}&rdquo;
-                                                        </p>
-                                                    )}
                                                 </div>
                                             </div>
-                                            <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-shrink-0">
-                                                <span className="text-xs font-medium text-slate-500">
-                                                    {formatDisplayDate(client.nextFollowUpDate)}
-                                                </span>
+
+                                            <div className="flex items-center justify-between sm:justify-end gap-3 flex-shrink-0 w-full sm:w-auto mt-2 sm:mt-0 pl-[60px] sm:pl-0">
+                                                <div className="text-right mr-2 hidden sm:block">
+                                                    <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-medium">Next Call</p>
+                                                    <p className={`text-sm font-semibold ${isOverdue ? 'text-red-600' : 'text-slate-700'}`}>
+                                                        {formatDisplayDate(client.nextFollowUpDate)}
+                                                    </p>
+                                                </div>
+
                                                 <button
                                                     type="button"
                                                     onClick={() => onMarkDone(client)}
-                                                    className="inline-flex items-center justify-center gap-2 min-h-[44px] px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 active:scale-[0.98] transition-all"
+                                                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 h-10 px-5 rounded-xl bg-white border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-primary hover:text-white hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 active:scale-[0.98] transition-all shadow-sm whitespace-nowrap group-hover:border-primary/30"
                                                 >
                                                     <FontAwesomeIcon icon={faCheckCircle} />
-                                                    Mark done
+                                                    Mark Done
                                                 </button>
                                             </div>
                                         </div>
@@ -240,20 +244,20 @@ const OutreachList: React.FC<OutreachListProps> = ({
                             })}
                         </ul>
 
-                        {/* Inline loading indicator: subtle spinner when fetching more */}
+                        {/* Inline loading indicator */}
                         {loading && (
                             <div
-                                className="flex items-center justify-center gap-2 py-5 text-slate-400"
+                                className="flex items-center justify-center gap-2 py-6 text-slate-400 bg-slate-50/50"
                                 role="status"
                                 aria-live="polite"
                                 aria-label="Loading more"
                             >
                                 <FontAwesomeIcon icon={faSpinner} spin className="text-sm" />
-                                <span className="text-sm font-medium">Loading…</span>
+                                <span className="text-sm font-medium font-mono uppercase tracking-wider">Loading...</span>
                             </div>
                         )}
 
-                        {/* Sentinel for infinite scroll: triggers load when near bottom */}
+                        {/* Sentinel */}
                         {hasMore && (
                             <div
                                 ref={sentinelRef}

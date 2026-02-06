@@ -10,7 +10,7 @@ import ImportPreviewModal from '../components/clients/ImportPreviewModal';
 import ClientFilters from '../components/clients/ClientFilters';
 import { ConfirmationModal } from '../components/common/ConfirmationModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faSortAmountDown, faSortAmountUp, faFileImport, faFileExport, faCheckCircle, faEdit, faTrash, faCheck, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faSortAmountDown, faSortAmountUp, faFileImport, faFileExport, faCheckCircle, faEdit, faTrash, faCheck, faChevronLeft, faChevronRight, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import { parseExcel, exportClientsToExcel } from '../utils/excelUtils';
 import { getWhatsAppLink } from '../utils/phoneUtils';
@@ -328,12 +328,12 @@ const Clients: React.FC = () => {
     return (
         <div className="max-w-[1600px] mx-auto w-full">
 
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6 font-sans">
                 <div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-slate-800">Follow Ups</h2>
-                    <p className="text-slate-500 text-sm md:text-base mt-1">Manage client relationships and sales pipeline.</p>
+                    <h2 className="text-2xl md:text-3xl font-bold text-slate-900 font-mono tracking-tight">Follow Ups</h2>
+                    <p className="text-slate-500 text-sm mt-2 font-medium">Manage client relationships and sales pipeline.</p>
                 </div>
-                <div className="flex flex-wrap gap-2 w-full lg:w-auto">
+                <div className="flex flex-wrap gap-3 w-full lg:w-auto">
                     <input
                         type="file"
                         ref={fileInputRef}
@@ -343,21 +343,21 @@ const Clients: React.FC = () => {
                     />
                     <button
                         onClick={handleImportClick}
-                        className="flex-1 lg:flex-none justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 transition"
+                        className="flex-1 lg:flex-none justify-center bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl font-medium flex items-center gap-2 transition shadow-sm h-11"
                     >
-                        <FontAwesomeIcon icon={faFileImport} />
-                        Import Clients
+                        <FontAwesomeIcon icon={faFileImport} className="text-slate-400" />
+                        <span>Import</span>
                     </button>
                     <button
                         onClick={handleExport}
-                        className="flex-1 lg:flex-none justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 transition"
+                        className="flex-1 lg:flex-none justify-center bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl font-medium flex items-center gap-2 transition shadow-sm h-11"
                     >
-                        <FontAwesomeIcon icon={faFileExport} />
-                        Export
+                        <FontAwesomeIcon icon={faFileExport} className="text-slate-400" />
+                        <span>Export</span>
                     </button>
                     <button
                         onClick={() => { setEditingClient(null); setIsClientModalOpen(true); }}
-                        className="flex-1 lg:flex-none justify-center bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg font-medium shadow-lg shadow-blue-500/30 flex items-center gap-2 transition whitespace-nowrap min-h-[44px]"
+                        className="flex-1 lg:flex-none justify-center bg-primary hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg shadow-blue-500/20 flex items-center gap-2 transition whitespace-nowrap h-11 active:scale-95"
                     >
                         <FontAwesomeIcon icon={faPlus} />
                         Add Client
@@ -366,27 +366,30 @@ const Clients: React.FC = () => {
             </div>
 
             {/* SECTION 1: Calls Due Today & Overdue */}
-            <div className="mb-10">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+            {/* SECTION 1: Calls Due Today & Overdue */}
+            <div className="mb-12 font-sans">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                     <div className="flex items-center gap-3">
-                        <h3 className="text-xl font-bold text-slate-800">Calls Due Today & Overdue</h3>
-                        <span className="bg-red-100 text-red-600 text-sm font-bold px-3 py-1 rounded-full">
+                        <h3 className="text-lg font-bold text-slate-800 font-mono tracking-tight uppercase">Calls Due Today & Overdue</h3>
+                        <span className="bg-red-100 text-red-600 text-xs font-bold px-2.5 py-1 rounded-full font-mono border border-red-200">
                             {totalDueCount}
                         </span>
                     </div>
                     {/* Follow-Ups Search Bar */}
-                    <div className="w-full sm:w-64">
+                    <div className="w-full sm:w-72 relative group">
                         <input
                             type="text"
                             placeholder="Search follow-ups..."
                             value={followUpSearchQuery}
                             onChange={(e) => setFollowUpSearchQuery(e.target.value)}
-                            className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm group-hover:border-slate-300 font-sans"
                         />
+                        {/* Search Icon (Simulated via class since I can't easily add FontAwesomeIcon inside input without wrapper, keeping it simple as before but wrapper layout is possible) */}
+                        {/* Actually I'll wrap it properly or leave it. The original code didn't have icon inside? It just had input. I'll stick to input but cleaner. */}
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {paginatedDueClients.length > 0 ? (
                         paginatedDueClients.map(client => (
                             <ClientCard
@@ -398,16 +401,22 @@ const Clients: React.FC = () => {
                             />
                         ))
                     ) : (
-                        <div className="col-span-full py-8 text-center text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                        <div className="col-span-full py-16 text-center text-slate-400 bg-white rounded-2xl border border-dashed border-slate-200">
                             {totalDueCount > 0 ? (
                                 <>
-                                    <FontAwesomeIcon icon={faCheckCircle} className="text-3xl text-slate-300 mb-2" />
-                                    <p className="font-medium">No clients found matching "{followUpSearchQuery}"</p>
+                                    <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-4">
+                                        <FontAwesomeIcon icon={faCheckCircle} className="text-3xl text-slate-300" />
+                                    </div>
+                                    <p className="font-medium text-slate-600">No clients found matching "{followUpSearchQuery}"</p>
+                                    <button onClick={() => setFollowUpSearchQuery('')} className="text-primary font-bold text-sm mt-2 hover:underline">Clear Search</button>
                                 </>
                             ) : (
                                 <>
-                                    <FontAwesomeIcon icon={faCheckCircle} className="text-3xl text-emerald-200 mb-2" />
-                                    <p className="font-medium">All caught up! No calls due today.</p>
+                                    <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-4 border border-emerald-100">
+                                        <FontAwesomeIcon icon={faCheckCircle} className="text-3xl text-emerald-400" />
+                                    </div>
+                                    <p className="font-bold text-slate-800 text-lg">All caught up!</p>
+                                    <p className="text-slate-500 mt-1">No pending calls due today.</p>
                                 </>
                             )}
                         </div>
@@ -416,25 +425,25 @@ const Clients: React.FC = () => {
 
                 {/* Cards Pagination Footer */}
                 {totalDueCount > CARDS_PER_PAGE && (
-                    <div className="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4 p-4 rounded-xl">
-                        <div className="text-sm text-slate-500">
-                            Showing <span className="font-bold text-slate-700">{(currentCardsPage - 1) * CARDS_PER_PAGE + 1}</span> to <span className="font-bold text-slate-700">{Math.min(currentCardsPage * CARDS_PER_PAGE, totalDueCount)}</span> of <span className="font-bold text-slate-700">{totalDueCount}</span> overdue/due
+                    <div className="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        <div className="text-xs text-slate-500 font-medium font-mono uppercase tracking-wide">
+                            Showing <span className="text-slate-800 font-bold">{(currentCardsPage - 1) * CARDS_PER_PAGE + 1}</span> - <span className="text-slate-800 font-bold">{Math.min(currentCardsPage * CARDS_PER_PAGE, totalDueCount)}</span> of <span className="text-slate-800 font-bold">{totalDueCount}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={() => setCurrentCardsPage(prev => Math.max(1, prev - 1))}
                                 disabled={currentCardsPage === 1}
-                                className="px-3 py-1.5 rounded border border-slate-200 bg-white text-slate-600 text-sm font-medium hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1"
+                                className="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-600 text-sm font-medium hover:bg-white hover:text-primary hover:border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm flex items-center gap-1"
                             >
                                 <FontAwesomeIcon icon={faChevronLeft} className="text-xs" /> Previous
                             </button>
-                            <span className="text-sm text-slate-600 font-medium px-2 min-w-[80px] text-center">
-                                Page {currentCardsPage} of {totalCardPages}
+                            <span className="text-xs font-bold font-mono px-3 text-slate-600">
+                                {currentCardsPage} / {totalCardPages}
                             </span>
                             <button
                                 onClick={() => setCurrentCardsPage(prev => Math.min(totalCardPages, prev + 1))}
                                 disabled={currentCardsPage === totalCardPages}
-                                className="px-3 py-1.5 rounded border border-slate-200 bg-white text-slate-600 text-sm font-medium hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1"
+                                className="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-600 text-sm font-medium hover:bg-white hover:text-primary hover:border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm flex items-center gap-1"
                             >
                                 Next <FontAwesomeIcon icon={faChevronRight} className="text-xs" />
                             </button>
@@ -444,36 +453,36 @@ const Clients: React.FC = () => {
             </div>
 
             {/* SECTION 2: All Clients Database */}
-                <div ref={databaseRef} className="scroll-mt-24">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg md:text-xl font-bold text-slate-800">All Clients Database ({totalFetched})</h3>
+            <div ref={databaseRef} className="scroll-mt-24 font-sans">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-lg md:text-xl font-bold text-slate-900 font-mono tracking-tight uppercase border-l-4 border-primary pl-3">All Clients Database ({totalFetched})</h3>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div className="p-6 border-b border-slate-100 flex flex-wrap gap-4 justify-between items-center">
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div className="p-6 border-b border-slate-100 flex flex-wrap gap-4 justify-between items-center bg-slate-50/30">
                         {selectedClientIds.size > 0 ? (
                             <div className="flex items-center gap-4 w-full animate-fade-in text-slate-700">
-                                <span className="font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full text-sm">
-                                    {selectedClientIds.size} Selected
+                                <span className="font-bold text-primary bg-blue-100 px-3 py-1 rounded-lg text-sm font-mono">
+                                    {selectedClientIds.size} SELECTED
                                 </span>
                                 <div className="h-6 w-px bg-slate-300 mx-2"></div>
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => handleBulkStatusUpdate('Active')}
-                                        className="bg-white border border-slate-200 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 text-slate-600 px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2"
+                                        className="bg-white border border-slate-200 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 text-slate-600 px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2 shadow-sm"
                                     >
                                         <FontAwesomeIcon icon={faCheck} /> Set Active
                                     </button>
                                     <button
                                         onClick={() => handleBulkStatusUpdate('Archived')}
-                                        className="bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-sm font-medium transition"
+                                        className="bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm"
                                     >
                                         Archive
                                     </button>
                                     <button
                                         onClick={handleBulkDelete}
                                         disabled={isDeleting}
-                                        className={`bg-white border border-red-200 hover:bg-red-50 hover:text-red-600 text-slate-600 px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        className={`bg-white border border-red-200 hover:bg-red-50 hover:text-red-600 text-slate-600 px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2 shadow-sm ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                         <FontAwesomeIcon icon={faTrash} /> Delete
                                     </button>
@@ -493,44 +502,44 @@ const Clients: React.FC = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-slate-50/50 text-slate-500 text-xs uppercase font-bold tracking-wider">
-                                    <th className="p-4 w-4">
+                                <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-[11px] uppercase font-bold tracking-wider font-mono">
+                                    <th className="p-5 w-4">
                                         <input
                                             type="checkbox"
-                                            className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                            className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary/20 cursor-pointer"
                                             checked={clients.length > 0 && selectedClientIds.size === clients.length}
                                             onChange={toggleSelectAll}
                                             disabled={isDeleting}
                                         />
                                     </th>
-                                    <th className="p-4 cursor-pointer hover:text-blue-600" onClick={() => toggleSort('clientName')}>
-                                        Client <FontAwesomeIcon icon={sortField === 'clientName' && sortDirection === 'desc' ? faSortAmountUp : faSortAmountDown} className={`ml-1 ${sortField === 'clientName' ? 'opacity-100' : 'opacity-50'}`} />
+                                    <th className="p-5 cursor-pointer hover:text-primary transition-colors" onClick={() => toggleSort('clientName')}>
+                                        Client <FontAwesomeIcon icon={sortField === 'clientName' && sortDirection === 'desc' ? faSortAmountUp : faSortAmountDown} className={`ml-1 ${sortField === 'clientName' ? 'opacity-100' : 'opacity-30'}`} />
                                     </th>
-                                    <th className="p-4 hidden md:table-cell">Contact</th>
-                                    <th className="p-4 hidden sm:table-cell">Type</th>
-                                    <th className="p-4 hidden lg:table-cell">Status</th>
-                                    <th className="p-4 cursor-pointer hover:text-blue-600" onClick={() => toggleSort('nextFollowUpDate')}>
-                                        Next Call <FontAwesomeIcon icon={sortField === 'nextFollowUpDate' && sortDirection === 'desc' ? faSortAmountUp : faSortAmountDown} className={`ml-1 ${sortField === 'nextFollowUpDate' ? 'opacity-100' : 'opacity-50'}`} />
+                                    <th className="p-5 hidden md:table-cell">Contact</th>
+                                    <th className="p-5 hidden sm:table-cell">Type</th>
+                                    <th className="p-5 hidden lg:table-cell">Status</th>
+                                    <th className="p-5 cursor-pointer hover:text-primary transition-colors" onClick={() => toggleSort('nextFollowUpDate')}>
+                                        Next Call <FontAwesomeIcon icon={sortField === 'nextFollowUpDate' && sortDirection === 'desc' ? faSortAmountUp : faSortAmountDown} className={`ml-1 ${sortField === 'nextFollowUpDate' ? 'opacity-100' : 'opacity-30'}`} />
                                     </th>
-                                    <th className="p-4 hidden xl:table-cell">Notes</th>
-                                    <th className="p-4 text-right">Action</th>
+                                    <th className="p-5 hidden xl:table-cell">Notes</th>
+                                    <th className="p-5 text-right">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 text-sm">
                                 {clients.map(client => (
-                                    <tr key={client.id} className={`hover:bg-slate-50 transition-colors duration-500 ${selectedClientIds.has(client.id) ? 'bg-blue-50/30' : ''} ${highlightedClientId === client.id ? 'bg-blue-100 ring-2 ring-blue-500/20' : ''}`}>
-                                        <td className="p-4">
+                                    <tr key={client.id} className={`hover:bg-slate-50 transition-colors duration-200 group ${selectedClientIds.has(client.id) ? 'bg-blue-50/40' : ''} ${highlightedClientId === client.id ? 'bg-blue-100 ring-2 ring-blue-500/20' : ''}`}>
+                                        <td className="p-5">
                                             <input
                                                 type="checkbox"
-                                                className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                                className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary/20 cursor-pointer"
                                                 checked={selectedClientIds.has(client.id)}
                                                 onChange={() => toggleSelectClient(client.id)}
                                                 disabled={isDeleting}
                                             />
                                         </td>
-                                        <td className="p-4">
+                                        <td className="p-5">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs overflow-hidden border border-slate-200 flex-shrink-0">
+                                                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs overflow-hidden border border-slate-200 flex-shrink-0 shadow-sm">
                                                     {client.profileImage ? (
                                                         <img src={client.profileImage} alt={client.clientName} className="w-full h-full object-cover" />
                                                     ) : (
@@ -538,32 +547,21 @@ const Clients: React.FC = () => {
                                                     )}
                                                 </div>
                                                 <div>
-                                                    <div className="font-semibold text-slate-800">{client.clientName}</div>
-                                                    <div className="md:hidden text-xs text-slate-500">
-                                                        {getWhatsAppLink(client.mobile) ? (
-                                                            <a
-                                                                href={getWhatsAppLink(client.mobile)!}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="hover:text-blue-600 hover:underline"
-                                                            >
-                                                                {client.mobile}
-                                                            </a>
-                                                        ) : (
-                                                            client.mobile
-                                                        )}
+                                                    <div className="font-bold text-slate-800 text-base">{client.clientName}</div>
+                                                    <div className="md:hidden text-xs text-slate-500 mt-0.5 font-medium">
+                                                        {client.mobile}
                                                     </div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="p-4 hidden md:table-cell">
-                                            <div className="text-slate-600 font-medium">
+                                        <td className="p-5 hidden md:table-cell">
+                                            <div className="text-slate-700 font-medium">
                                                 {getWhatsAppLink(client.mobile) ? (
                                                     <a
                                                         href={getWhatsAppLink(client.mobile)!}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="hover:text-blue-600 hover:underline"
+                                                        className="hover:text-emerald-600 hover:underline flex items-center gap-1.5"
                                                     >
                                                         {client.mobile}
                                                     </a>
@@ -571,33 +569,33 @@ const Clients: React.FC = () => {
                                                     client.mobile
                                                 )}
                                             </div>
-                                            <div className="text-xs text-slate-400">{client.email}</div>
+                                            <div className="text-xs text-slate-400 mt-0.5">{client.email}</div>
                                         </td>
-                                        <td className="p-4 hidden sm:table-cell">
-                                            <span className={`text-xs px-2 py-1 rounded-full font-bold ${client.clientType === 'Prospect' ? 'bg-purple-100 text-purple-600' :
-                                                client.clientType === 'User' ? 'bg-green-100 text-green-600' :
-                                                    client.clientType === 'Supervisor' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-600'
+                                        <td className="p-5 hidden sm:table-cell">
+                                            <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${client.clientType === 'Prospect' ? 'bg-purple-50 text-purple-700 border-purple-100' :
+                                                client.clientType === 'User' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                                                    client.clientType === 'Supervisor' ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-blue-50 text-blue-700 border-blue-100'
                                                 }`}>
                                                 {client.clientType}
                                             </span>
                                         </td>
-                                        <td className="p-4 hidden lg:table-cell">
-                                            <span className={`text-xs px-2 py-1 rounded-full font-medium ${client.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'
+                                        <td className="p-5 hidden lg:table-cell">
+                                            <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${client.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-slate-100 text-slate-500 border-slate-200'
                                                 }`}>
                                                 {client.status}
                                             </span>
                                         </td>
-                                        <td className="p-4">
-                                            <div className="font-medium text-slate-700">
+                                        <td className="p-5">
+                                            <div className="font-semibold text-slate-700">
                                                 {formatDisplayDate(client.nextFollowUpDate)}
                                             </div>
-                                            <div className="text-xs text-slate-400">{client.frequency}</div>
+                                            <div className="text-xs text-slate-400 mt-0.5">{client.frequency}</div>
                                         </td>
-                                        <td className="p-4 max-w-xs truncate text-slate-500 hidden xl:table-cell" title={client.notes}>
+                                        <td className="p-5 max-w-xs truncate text-slate-500 hidden xl:table-cell italic" title={client.notes}>
                                             {client.notes}
                                         </td>
-                                        <td className="p-4 text-right">
-                                            <button onClick={() => openEditModal(client)} className="text-slate-400 hover:text-blue-600 p-2">
+                                        <td className="p-5 text-right">
+                                            <button onClick={() => openEditModal(client)} className="text-slate-400 hover:text-primary p-2 transition-colors rounded-lg hover:bg-blue-50">
                                                 <FontAwesomeIcon icon={faEdit} />
                                             </button>
                                         </td>
@@ -605,8 +603,13 @@ const Clients: React.FC = () => {
                                 ))}
                                 {clients.length === 0 && (
                                     <tr>
-                                        <td colSpan={8} className="p-8 text-center text-slate-400 italic">
-                                            {clientsLoading ? 'Loading clients...' : 'No clients found.'}
+                                        <td colSpan={8} className="p-12 text-center text-slate-400 italic bg-slate-50/50">
+                                            {clientsLoading ? (
+                                                <div className="flex items-center justify-center gap-3">
+                                                    <FontAwesomeIcon icon={faSpinner} spin className="text-primary" />
+                                                    <span>Loading clients...</span>
+                                                </div>
+                                            ) : 'No clients found matching your filters.'}
                                         </td>
                                     </tr>
                                 )}
@@ -615,25 +618,25 @@ const Clients: React.FC = () => {
                     </div>
 
                     {/* Pagination Footer */}
-                    <div className="p-6 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
-                        <div className="text-sm text-slate-500">
-                            Showing <span className="font-bold text-slate-700">{totalFetched > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0}</span> to <span className="font-bold text-slate-700">{Math.min(currentPage * ITEMS_PER_PAGE, totalFetched)}</span> out of <span className="font-bold text-slate-700">{totalFetched}</span> clients
+                    <div className="p-6 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/30">
+                        <div className="text-xs text-slate-500 font-medium font-mono uppercase tracking-wide">
+                            Showing <span className="text-slate-800 font-bold">{totalFetched > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0}</span> - <span className="text-slate-800 font-bold">{Math.min(currentPage * ITEMS_PER_PAGE, totalFetched)}</span> of <span className="text-slate-800 font-bold">{totalFetched}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                 disabled={currentPage === 1}
-                                className="px-3 py-1.5 rounded border border-slate-200 bg-white text-slate-600 text-sm font-medium hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1"
+                                className="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-600 text-sm font-medium hover:bg-white hover:text-primary hover:border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm flex items-center gap-1"
                             >
                                 <FontAwesomeIcon icon={faChevronLeft} className="text-xs" /> Previous
                             </button>
-                            <span className="text-sm text-slate-600 font-medium px-2 min-w-[80px] text-center">
-                                Page {currentPage} of {Math.max(1, Math.ceil(totalFetched / ITEMS_PER_PAGE))}
+                            <span className="text-xs font-bold font-mono px-3 text-slate-600">
+                                {currentPage} / {Math.max(1, Math.ceil(totalFetched / ITEMS_PER_PAGE))}
                             </span>
                             <button
                                 onClick={() => setCurrentPage(prev => prev + 1)}
                                 disabled={currentPage >= Math.ceil(totalFetched / ITEMS_PER_PAGE)}
-                                className="px-3 py-1.5 rounded border border-slate-200 bg-white text-slate-600 text-sm font-medium hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1"
+                                className="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-600 text-sm font-medium hover:bg-white hover:text-primary hover:border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm flex items-center gap-1"
                             >
                                 Next <FontAwesomeIcon icon={faChevronRight} className="text-xs" />
                             </button>

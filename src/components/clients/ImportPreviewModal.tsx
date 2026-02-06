@@ -323,32 +323,34 @@ const ImportPreviewModal: React.FC<ImportPreviewModalProps> = ({ isOpen, onClose
     }
 
     return (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-2xl max-w-6xl w-full h-[90vh] flex flex-col overflow-hidden animate-fade-in">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 font-sans">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full h-[90vh] flex flex-col overflow-hidden animate-scale-in border border-slate-100">
                 {/* Header */}
                 <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                     <div>
-                        <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                            <FontAwesomeIcon icon={faCloudUploadAlt} className="text-blue-600" />
+                        <h2 className="text-xl font-bold text-slate-900 flex items-center gap-3 font-heading tracking-tight">
+                            <div className="bg-blue-100 text-primary w-10 h-10 rounded-xl flex items-center justify-center shadow-sm">
+                                <FontAwesomeIcon icon={faCloudUploadAlt} className="text-lg" />
+                            </div>
                             Import Preview
                         </h2>
-                        <p className="text-sm text-slate-500">Review and validate your data before importing.</p>
+                        <p className="text-sm text-slate-500 mt-1 ml-13">Review and validate your data before importing.</p>
                     </div>
-                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition">
+                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors p-2 rounded-lg hover:bg-slate-100">
                         <FontAwesomeIcon icon={faTimes} className="text-xl" />
                     </button>
                 </div>
 
                 {/* Toolbar */}
                 <div className="p-4 border-b border-slate-100 flex flex-wrap gap-4 justify-between items-center bg-white sticky top-0 z-10">
-                    <div className="relative">
-                        <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <div className="relative w-full md:w-72">
+                        <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm" />
                         <input
                             type="text"
                             placeholder="Search preview..."
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
-                            className="pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-64"
+                            className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-sm font-medium text-slate-700 bg-slate-50/50 focus:bg-white"
                         />
                     </div>
 
@@ -356,50 +358,50 @@ const ImportPreviewModal: React.FC<ImportPreviewModalProps> = ({ isOpen, onClose
                         <div className="flex items-center gap-2 mr-4 border-r border-slate-200 pr-4">
                             <button
                                 onClick={() => toggleFilter('Valid')}
-                                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium transition ${activeFilter === 'Valid' ? 'bg-green-100 text-green-700 ring-2 ring-green-500 ring-offset-1' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+                                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${activeFilter === 'Valid' ? 'bg-green-100 text-green-700 ring-2 ring-green-500/20' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
                             >
-                                <FontAwesomeIcon icon={faCheckCircle} className={activeFilter === 'Valid' ? 'text-green-600' : 'text-green-500'} />
+                                <FontAwesomeIcon icon={faCheckCircle} className={activeFilter === 'Valid' ? 'text-green-600' : 'text-green-400'} />
                                 {stats.valid} Valid
                             </button>
                             <button
                                 onClick={() => toggleFilter('Invalid')}
-                                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium transition ${activeFilter === 'Invalid' ? 'bg-red-100 text-red-700 ring-2 ring-red-500 ring-offset-1' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+                                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${activeFilter === 'Invalid' ? 'bg-red-100 text-red-700 ring-2 ring-red-500/20' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
                             >
-                                <FontAwesomeIcon icon={faExclamationTriangle} className={activeFilter === 'Invalid' ? 'text-red-600' : 'text-red-500'} />
+                                <FontAwesomeIcon icon={faExclamationTriangle} className={activeFilter === 'Invalid' ? 'text-red-600' : 'text-red-400'} />
                                 {stats.invalid} Invalid
                             </button>
                             <button
                                 onClick={() => toggleFilter('Duplicate')}
-                                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium transition ${activeFilter === 'Duplicate' ? 'bg-amber-100 text-amber-700 ring-2 ring-amber-500 ring-offset-1' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+                                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${activeFilter === 'Duplicate' ? 'bg-amber-100 text-amber-700 ring-2 ring-amber-500/20' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
                             >
-                                <FontAwesomeIcon icon={faExclamationCircle} className={activeFilter === 'Duplicate' ? 'text-amber-600' : 'text-amber-500'} />
+                                <FontAwesomeIcon icon={faExclamationCircle} className={activeFilter === 'Duplicate' ? 'text-amber-600' : 'text-amber-400'} />
                                 {stats.duplicates} Duplicates
                             </button>
                         </div>
 
 
-                        <button onClick={handleDownloadErrors} disabled={stats.invalid === 0} className={`text-slate-600 hover:bg-slate-50 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 ${stats.invalid === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                        <button onClick={handleDownloadErrors} disabled={stats.invalid === 0} className={`text-slate-600 hover:bg-slate-50 px-3 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2 border border-transparent hover:border-slate-200 ${stats.invalid === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}>
                             <FontAwesomeIcon icon={faDownload} /> Download Errors
                         </button>
                     </div>
                 </div>
 
                 {/* Table */}
-                <div className="flex-1 overflow-auto bg-slate-50 p-4">
-                    <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden min-w-[1000px]">
+                <div className="flex-1 overflow-auto bg-slate-50 p-4 custom-scrollbar">
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden min-w-[1000px]">
                         <table className="w-full text-left text-sm">
-                            <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-xs sticky top-0 z-10 shadow-sm">
+                            <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 text-[11px] uppercase font-bold tracking-wider font-mono sticky top-0 z-10 shadow-sm">
                                 <tr>
-                                    <th className="p-3 w-10">#</th>
-                                    <th className="p-3 w-32">Action</th>
-                                    <th className="p-3 w-48">Client Name <span className="text-red-500">*</span></th>
-                                    <th className="p-3 w-40">Mobile <span className="text-red-500">*</span></th>
-                                    <th className="p-3 w-48">Email</th>
-                                    <th className="p-3 w-32">Type</th>
-                                    <th className="p-3 w-32">Frequency</th>
-                                    <th className="p-3 w-40">Next Call</th>
-                                    <th className="p-3">Notes</th>
-                                    <th className="p-3 w-48">Validation</th>
+                                    <th className="p-4 w-12 text-center">#</th>
+                                    <th className="p-4 w-32">Action</th>
+                                    <th className="p-4 w-48">Client Name <span className="text-red-500">*</span></th>
+                                    <th className="p-4 w-40">Mobile <span className="text-red-500">*</span></th>
+                                    <th className="p-4 w-48">Email</th>
+                                    <th className="p-4 w-32">Type</th>
+                                    <th className="p-4 w-32">Frequency</th>
+                                    <th className="p-4 w-40">Next Call</th>
+                                    <th className="p-4">Notes</th>
+                                    <th className="p-4 w-48">Validation</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
@@ -410,15 +412,15 @@ const ImportPreviewModal: React.FC<ImportPreviewModalProps> = ({ isOpen, onClose
                                     const isDup = row.isDuplicate;
 
                                     return (
-                                        <tr key={index} className={`hover:bg-slate-50 transition ${isError ? 'bg-red-50/50' : isDup ? 'bg-amber-50/50' : ''}`}>
-                                            <td className="p-3 text-slate-400 text-xs w-10">{index + 1}</td>
-                                            <td className="p-3">
+                                        <tr key={index} className={`hover:bg-slate-50 transition-colors duration-150 ${isError ? 'bg-red-50/30' : isDup ? 'bg-amber-50/30' : ''}`}>
+                                            <td className="p-4 text-slate-400 text-xs font-mono text-center">{index + 1}</td>
+                                            <td className="p-4">
                                                 <select
                                                     value={row.action}
                                                     onChange={(e) => handleActionChange(index, e.target.value as RowAction)}
-                                                    className={`w-full text-xs font-bold rounded px-2 py-1 border focus:outline-none focus:ring-1 ${row.action === 'Import' ? 'bg-green-100 text-green-700 border-green-200' :
-                                                        row.action === 'Update' ? 'bg-blue-100 text-blue-700 border-blue-200' :
-                                                            'bg-slate-100 text-slate-500 border-slate-200'
+                                                    className={`w-full text-[11px] font-bold uppercase tracking-wider rounded-lg px-2 py-1.5 border focus:outline-none focus:ring-2 bg-white transition-all cursor-pointer ${row.action === 'Import' ? 'text-green-700 border-green-200 focus:border-green-500 focus:ring-green-500/20' :
+                                                        row.action === 'Update' ? 'text-blue-700 border-blue-200 focus:border-blue-500 focus:ring-blue-500/20' :
+                                                            'text-slate-500 border-slate-200 focus:border-slate-400 focus:ring-slate-400/20'
                                                         }`}
                                                     disabled={isError}
                                                 >
@@ -427,38 +429,38 @@ const ImportPreviewModal: React.FC<ImportPreviewModalProps> = ({ isOpen, onClose
                                                     {isDup && <option value="Update">Update</option>}
                                                 </select>
                                             </td>
-                                            <td className="p-3">
+                                            <td className="p-4">
                                                 <input
                                                     type="text"
                                                     value={row.client.clientName}
                                                     onChange={e => handleUpdateCell(index, 'clientName', e.target.value)}
-                                                    className={`w-full bg-transparent border-none p-0 focus:ring-0 text-sm ${!row.client.clientName ? 'placeholder-red-400' : ''}`}
+                                                    className={`w-full bg-transparent border-b border-transparent focus:border-primary p-0 pb-1 focus:ring-0 text-sm font-medium transition-colors ${!row.client.clientName ? 'placeholder-red-400' : 'text-slate-800'}`}
                                                     placeholder="Required"
                                                 />
                                             </td>
-                                            <td className="p-3">
+                                            <td className="p-4">
                                                 <input
                                                     type="text"
                                                     value={row.client.mobile}
                                                     onChange={e => handleUpdateCell(index, 'mobile', e.target.value)}
-                                                    className={`w-full bg-transparent border-none p-0 focus:ring-0 text-sm ${!row.client.mobile ? 'placeholder-red-400' : ''}`}
+                                                    className={`w-full bg-transparent border-b border-transparent focus:border-primary p-0 pb-1 focus:ring-0 text-sm font-mono text-slate-600 transition-colors ${!row.client.mobile ? 'placeholder-red-400' : ''}`}
                                                     placeholder="Required"
                                                 />
                                             </td>
-                                            <td className="p-3">
+                                            <td className="p-4">
                                                 <input
                                                     type="text"
                                                     value={row.client.email}
                                                     onChange={e => handleUpdateCell(index, 'email', e.target.value)}
-                                                    className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm placeholder-slate-300"
+                                                    className="w-full bg-transparent border-b border-transparent focus:border-primary p-0 pb-1 focus:ring-0 text-sm text-slate-600 placeholder-slate-300 transition-colors"
                                                     placeholder="Optional"
                                                 />
                                             </td>
-                                            <td className="p-3">
+                                            <td className="p-4">
                                                 <select
                                                     value={row.client.clientType}
                                                     onChange={e => handleUpdateCell(index, 'clientType', e.target.value, e.target as HTMLElement)}
-                                                    className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm text-slate-600"
+                                                    className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-medium text-slate-600 cursor-pointer"
                                                 >
                                                     <option value="Prospect">Prospect</option>
                                                     <option value="Associate">Associate</option>
@@ -466,11 +468,11 @@ const ImportPreviewModal: React.FC<ImportPreviewModalProps> = ({ isOpen, onClose
                                                     <option value="Supervisor">Supervisor</option>
                                                 </select>
                                             </td>
-                                            <td className="p-3">
+                                            <td className="p-4">
                                                 <select
                                                     value={row.client.frequency || 'Monthly'}
                                                     onChange={e => handleUpdateCell(index, 'frequency', e.target.value, e.target as HTMLElement)}
-                                                    className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm text-slate-600"
+                                                    className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-medium text-slate-600 cursor-pointer"
                                                 >
                                                     <option value="Daily">Daily</option>
                                                     <option value="Weekly">Weekly</option>
@@ -478,16 +480,16 @@ const ImportPreviewModal: React.FC<ImportPreviewModalProps> = ({ isOpen, onClose
                                                     <option value="Monthly">Monthly</option>
                                                 </select>
                                             </td>
-                                            <td className="p-3">
+                                            <td className="p-4">
                                                 <input
                                                     type="date"
                                                     value={toInputDate(row.client.nextFollowUpDate)}
                                                     onChange={e => handleUpdateCell(index, 'nextFollowUpDate', e.target.value)}
                                                     onClick={(e) => (e.currentTarget as HTMLInputElement).showPicker()}
-                                                    className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm text-slate-600 cursor-pointer no-calendar-icon"
+                                                    className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-medium text-slate-600 cursor-pointer no-calendar-icon"
                                                 />
                                             </td>
-                                            <td className="p-3">
+                                            <td className="p-4">
                                                 <input
                                                     type="text"
                                                     value={row.client.notes}
@@ -496,23 +498,23 @@ const ImportPreviewModal: React.FC<ImportPreviewModalProps> = ({ isOpen, onClose
                                                     placeholder="-"
                                                 />
                                             </td>
-                                            <td className="p-3">
+                                            <td className="p-4">
                                                 {isError ? (
-                                                    <span className="text-red-500 text-xs flex items-center gap-1">
+                                                    <span className="text-red-500 text-xs font-bold flex items-center gap-1.5 bg-red-50 px-2 py-1 rounded-md border border-red-100 w-fit">
                                                         <FontAwesomeIcon icon={faBan} /> {row.errors[0]}
                                                     </span>
                                                 ) : isDup ? (
                                                     row.action === 'Update' && row.changedFields && row.changedFields.length > 0 ? (
-                                                        <span className="text-blue-600 text-xs flex items-center gap-1 font-medium" title={row.changedFields.join(', ')}>
+                                                        <span className="text-blue-600 text-xs font-bold flex items-center gap-1.5 bg-blue-50 px-2 py-1 rounded-md border border-blue-100 w-fit" title={row.changedFields.join(', ')}>
                                                             <FontAwesomeIcon icon={faExclamationCircle} /> Update: {row.changedFields.length > 2 ? `${row.changedFields.slice(0, 2).join(', ')}...` : row.changedFields.join(', ')}
                                                         </span>
                                                     ) : (
-                                                        <span className="text-amber-600 text-xs flex items-center gap-1 font-medium">
+                                                        <span className="text-amber-600 text-xs font-bold flex items-center gap-1.5 bg-amber-50 px-2 py-1 rounded-md border border-amber-100 w-fit">
                                                             <FontAwesomeIcon icon={faExclamationTriangle} /> Duplicate
                                                         </span>
                                                     )
                                                 ) : (
-                                                    <span className="text-green-500 text-xs flex items-center gap-1">
+                                                    <span className="text-emerald-600 text-xs font-bold flex items-center gap-1.5 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100 w-fit">
                                                         <FontAwesomeIcon icon={faCheckCircle} /> Ready
                                                     </span>
                                                 )}
@@ -523,7 +525,7 @@ const ImportPreviewModal: React.FC<ImportPreviewModalProps> = ({ isOpen, onClose
                             </tbody>
                         </table>
                         {filteredRows.length === 0 && (
-                            <div className="p-8 text-center text-slate-400">
+                            <div className="p-12 text-center text-slate-400 font-medium">
                                 No rows found matching your search.
                             </div>
                         )}
@@ -532,21 +534,21 @@ const ImportPreviewModal: React.FC<ImportPreviewModalProps> = ({ isOpen, onClose
 
                 {/* Footer */}
                 <div className="p-6 border-t border-slate-100 bg-white flex justify-between items-center z-10">
-                    <div className="text-slate-500 text-sm">
-                        <span className="font-bold text-slate-800">{stats.toImport}</span> New, <span className="font-bold text-blue-600">{stats.toUpdate}</span> Updates selected.
+                    <div className="text-slate-500 text-sm font-medium">
+                        <span className="font-bold text-slate-900">{stats.toImport}</span> New, <span className="font-bold text-primary">{stats.toUpdate}</span> Updates selected.
                     </div>
                     <div className="flex gap-4">
-                        <button onClick={onClose} disabled={isImporting} className="px-6 py-2.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium transition disabled:opacity-50">
+                        <button onClick={onClose} disabled={isImporting} className="px-6 py-3 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold transition disabled:opacity-50 uppercase tracking-wide text-xs">
                             Cancel
                         </button>
                         <button
                             onClick={handleConfirmImport}
                             disabled={isImporting || (stats.toImport === 0 && stats.toUpdate === 0)}
-                            className="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-bold shadow-lg shadow-blue-500/30 transition flex items-center gap-2 disabled:opacity-50 disabled:shadow-none"
+                            className="px-6 py-3 rounded-xl bg-primary hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-500/20 transition flex items-center gap-2 disabled:opacity-50 disabled:shadow-none uppercase tracking-wide text-xs transform hover:scale-105 active:scale-95"
                         >
                             {isImporting ? (
                                 <>
-                                    <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
+                                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                                     {importProgress || 'Processing...'}
                                 </>
                             ) : (

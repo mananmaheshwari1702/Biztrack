@@ -1,20 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-@layer theme {
-  :root {
-    --color-accent-blue: #2563eb;
-    /* Dashboard: spacing, elevation, radius */
-    --dashboard-section-gap: 2rem;   /* 8 */
-    --dashboard-card-radius: 1rem;    /* rounded-2xl */
-    --dashboard-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-    --dashboard-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
-  }
+@theme {
+  /* Colors */
+  --color-primary: #2563EB;
+  --color-secondary: #3B82F6;
+  --color-cta: #F97316;
+  --color-background: #EFF6FF;
+  --color-text: #1E40AF;
+
+  /* Neutrals */
+  --color-surface: #FFFFFF;
+  --color-border: #E5E7EB;
+  --color-muted: #64748B;
+
+  /* Typography */
+  --font-sans: "Fira Sans", sans-serif;
+  --font-heading: "Inter", sans-serif;
+  --font-mono: "Fira Code", monospace;
+
+  /* Legacy support / Aliases */
+  --color-accent-blue: var(--color-primary);
+
+  /* Dashboard tokens */
+  --dashboard-section-gap: 2rem;
+  --dashboard-card-radius: 1rem;
+  --dashboard-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --dashboard-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900;
+    @apply bg-slate-50 text-slate-900 font-sans;
+    color: var(--color-text);
   }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    @apply font-bold tracking-tight;
+  }
+
 
   /* Hide native password reveal button in Edge/IE */
   input[type="password"]::-ms-reveal,
@@ -29,6 +59,7 @@
 }
 
 @layer utilities {
+
   /* Toast slide-in animation */
   .animate-slide-in-right {
     animation: slideInRight 0.3s ease-out forwards;
@@ -39,6 +70,7 @@
       opacity: 0;
       transform: translateX(100%);
     }
+
     to {
       opacity: 1;
       transform: translateX(0);
@@ -55,6 +87,7 @@
       opacity: 0;
       transform: translateY(10px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -70,6 +103,7 @@
     from {
       opacity: 0;
     }
+
     to {
       opacity: 1;
     }
@@ -85,6 +119,7 @@
       opacity: 0;
       transform: scale(0.97);
     }
+
     to {
       opacity: 1;
       transform: scale(1);

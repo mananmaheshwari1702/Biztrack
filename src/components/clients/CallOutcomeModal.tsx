@@ -112,11 +112,12 @@ const CallOutcomeModal: React.FC<CallOutcomeModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all overflow-y-auto">
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-scale-in my-auto">
+
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all overflow-y-auto font-sans">
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-scale-in my-auto border border-slate-100">
                 {/* Header */}
-                <div className="p-6 border-b border-slate-100 bg-white text-center">
-                    <h3 className="text-xl font-bold text-slate-800">How did the call go?</h3>
+                <div className="p-6 border-b border-slate-100 bg-slate-50/50 text-center">
+                    <h3 className="text-xl font-bold text-slate-900 font-heading tracking-tight">How did the call go?</h3>
                     <p className="text-slate-500 text-sm mt-1">Select outcome for <span className="font-semibold text-slate-900">{clientName}</span></p>
                 </div>
 
@@ -125,15 +126,15 @@ const CallOutcomeModal: React.FC<CallOutcomeModalProps> = ({
                     <div className="grid grid-cols-2 gap-3 mb-6">
                         <OutcomeCard
                             title="Connected"
-                            subtitle={`Next call: ${frequency === 'Bi-Weekly' ? 'Every 2 Weeks' : frequency}`}
+                            subtitle={`Next: ${frequency === 'Bi-Weekly' ? 'Every 2 Wks' : frequency}`}
                             icon={faPhone}
                             color="blue"
                             selected={outcome === 'Connected'}
                             onClick={() => setOutcome('Connected')}
                         />
                         <OutcomeCard
-                            title="Left Voicemail"
-                            subtitle="Retry in: 1 Day"
+                            title="Voicemail"
+                            subtitle="Retry: 1 Day"
                             icon={faVoicemail}
                             color="orange"
                             selected={outcome === 'Voicemail'}
@@ -141,15 +142,15 @@ const CallOutcomeModal: React.FC<CallOutcomeModalProps> = ({
                         />
                         <OutcomeCard
                             title="Sale Closed"
-                            subtitle="Convert Client"
+                            subtitle="Convert"
                             icon={faHandshake}
                             color="emerald"
                             selected={outcome === 'Sale'}
                             onClick={() => setOutcome('Sale')}
                         />
                         <OutcomeCard
-                            title="Wrong Number"
-                            subtitle="Archive Client"
+                            title="Wrong #"
+                            subtitle="Archive"
                             icon={faBan}
                             color="red"
                             selected={outcome === 'WrongNumber'}
@@ -159,15 +160,14 @@ const CallOutcomeModal: React.FC<CallOutcomeModalProps> = ({
 
                     {/* Dynamic Fields */}
                     {outcome && (
-                        <div className="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4 animate-fade-in-up">
+                        <div className="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-5 animate-fade-in-up">
 
                             {/* Wrong Number Warning */}
                             {outcome === 'WrongNumber' ? (
-                                <div className="flex gap-3 text-sm text-slate-600 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                                    <FontAwesomeIcon icon={faExclamationTriangle} className="text-yellow-500 py-0.5" />
+                                <div className="flex gap-3 text-sm text-slate-600 bg-red-50 p-4 rounded-xl border border-red-100">
+                                    <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-500 py-0.5" />
                                     <p>
-                                        This client will be <strong>archived</strong> and removed from your active follow-up lists.
-                                        You can still access them in the database if needed.
+                                        This client will be <strong className="text-red-700">archived</strong> and removed from your active follow-up lists.
                                     </p>
                                 </div>
                             ) : (
@@ -175,13 +175,13 @@ const CallOutcomeModal: React.FC<CallOutcomeModalProps> = ({
                                     {/* Sale Closed - Client Type Dropdown */}
                                     {outcome === 'Sale' && (
                                         <div>
-                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 font-mono">
                                                 Change Client Type To
                                             </label>
                                             <select
                                                 value={effectiveClientType}
                                                 onChange={(e) => setUserSelectedType(e.target.value as ClientType)}
-                                                className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 bg-white transition-all"
+                                                className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 bg-white transition-all font-medium text-slate-700"
                                             >
                                                 {getClientTypeOptions().map(type => (
                                                     <option key={type} value={type}>{type}</option>
@@ -191,16 +191,15 @@ const CallOutcomeModal: React.FC<CallOutcomeModalProps> = ({
                                     )}
 
                                     {/* Follow-up Frequency - Only for Connected/Sale/Voicemail where next steps matter */}
-                                    {/* Follow-up Frequency - Only for Connected/Sale/Voicemail where next steps matter */}
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 font-mono">
                                             Follow-up Frequency
                                         </label>
                                         <div className="relative">
                                             <select
                                                 value={frequency}
                                                 onChange={(e) => setFrequency(e.target.value as 'Daily' | 'Weekly' | 'Bi-Weekly' | 'Monthly')}
-                                                className="w-full appearance-none px-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 bg-white cursor-pointer transition-all"
+                                                className="w-full appearance-none px-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 bg-white cursor-pointer transition-all font-medium text-slate-700"
                                             >
                                                 <option value="Daily">Daily</option>
                                                 <option value="Weekly">Weekly</option>
@@ -215,7 +214,7 @@ const CallOutcomeModal: React.FC<CallOutcomeModalProps> = ({
 
                                     {/* Date Picker */}
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 font-mono">
                                             Next Follow Up Date <span className="text-red-500">*</span>
                                         </label>
                                         <div className="relative">
@@ -225,14 +224,14 @@ const CallOutcomeModal: React.FC<CallOutcomeModalProps> = ({
                                                 value={nextDate}
                                                 onChange={(e) => setNextDate(e.target.value)}
                                                 onClick={(e) => e.currentTarget.showPicker()}
-                                                className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 bg-white cursor-pointer transition-all"
+                                                className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 bg-white cursor-pointer transition-all font-medium text-slate-700"
                                             />
                                         </div>
                                     </div>
 
                                     {/* Notes */}
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 font-mono">
                                             Notes {outcome === 'Connected' && 'for Next Call'}
                                         </label>
                                         <textarea
@@ -240,7 +239,7 @@ const CallOutcomeModal: React.FC<CallOutcomeModalProps> = ({
                                             onChange={(e) => setNotes(e.target.value)}
                                             rows={2}
                                             placeholder="Add context for the next follow-up..."
-                                            className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 bg-white resize-none transition-all"
+                                            className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 bg-white resize-none transition-all font-medium text-slate-700 placeholder:text-slate-400"
                                         ></textarea>
                                     </div>
                                 </>
@@ -250,13 +249,13 @@ const CallOutcomeModal: React.FC<CallOutcomeModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="flex gap-3 p-6 pt-2 border-t border-slate-100 bg-white">
-                    <Button variant="ghost" className="flex-1" onClick={onClose}>
+                <div className="flex gap-3 p-6 pt-4 border-t border-slate-100 bg-white">
+                    <Button variant="ghost" className="flex-1 rounded-xl uppercase tracking-wide text-xs font-bold border border-slate-200" onClick={onClose}>
                         Cancel
                     </Button>
                     <Button
                         variant="primary"
-                        className="flex-1"
+                        className="flex-1 rounded-xl bg-primary hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 uppercase tracking-wide text-xs font-bold"
                         onClick={handleConfirm}
                         disabled={!isValid()}
                     >
@@ -280,31 +279,31 @@ interface OutcomeCardProps {
 
 const OutcomeCard = ({ title, subtitle, icon, color, selected, onClick }: OutcomeCardProps) => {
     const colorClasses: Record<string, string> = {
-        blue: 'hover:border-blue-500 hover:bg-blue-50 text-blue-600',
+        blue: 'hover:border-primary hover:bg-blue-50 text-primary',
         orange: 'hover:border-orange-500 hover:bg-orange-50 text-orange-600',
         emerald: 'hover:border-emerald-500 hover:bg-emerald-50 text-emerald-600',
         red: 'hover:border-red-500 hover:bg-red-50 text-red-600',
     };
 
     const selectedClasses: Record<string, string> = {
-        blue: 'border-blue-600 bg-blue-50 ring-2 ring-blue-500/20',
+        blue: 'border-primary bg-blue-50 ring-2 ring-primary/20',
         orange: 'border-orange-500 bg-orange-50 ring-2 ring-orange-500/20',
         emerald: 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-500/20',
         red: 'border-red-500 bg-red-50 ring-2 ring-red-500/20',
     };
 
-    const isSelected = selected ? selectedClasses[color] : 'border-slate-200';
+    const isSelected = selected ? selectedClasses[color] : 'border-slate-200 bg-white shadow-sm';
 
     return (
         <button
             onClick={onClick}
             className={`flex flex-col items-start p-4 rounded-xl border transition-all duration-200 text-left w-full group ${isSelected} ${!selected && colorClasses[color]}`}
         >
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-3 text-sm transition-colors ${selected ? 'bg-white shadow-sm' : 'bg-slate-100 group-hover:bg-white group-hover:shadow-sm'}`}>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-3 text-sm transition-colors ${selected ? 'bg-white shadow-sm' : 'bg-slate-100 group-hover:bg-white group-hover:shadow-sm'}`}>
                 <FontAwesomeIcon icon={icon} />
             </div>
-            <span className={`text-sm font-bold block mb-0.5 ${selected ? 'text-slate-900' : 'text-slate-600 group-hover:text-slate-900'}`}>{title}</span>
-            <span className={`text-[10px] font-medium uppercase tracking-wide ${selected ? 'text-slate-500' : 'text-slate-400'}`}>{subtitle}</span>
+            <span className={`text-sm font-bold block mb-0.5 ${selected ? 'text-slate-900' : 'text-slate-700 group-hover:text-slate-900'}`}>{title}</span>
+            <span className={`text-[10px] font-mono font-medium uppercase tracking-wide ${selected ? 'text-slate-500' : 'text-slate-400'}`}>{subtitle}</span>
         </button>
     );
 };
