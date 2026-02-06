@@ -125,10 +125,10 @@ const ClientCard: React.FC<ClientCardProps> = ({ client, onEdit, onDelete, onMar
             </div>
 
             {/* Actions Bottom Row */}
-            <div className="p-4 pt-0 grid grid-cols-[1fr,auto] gap-3 mt-auto">
+            <div className="p-4 pt-0 flex items-center gap-3 mt-auto">
                 <button
                     onClick={() => onMarkDone(client)}
-                    className="bg-primary hover:bg-blue-700 text-white py-2.5 rounded-xl text-sm font-bold shadow-sm shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 font-sans group/btn border border-transparent"
+                    className="flex-1 bg-primary hover:bg-blue-700 text-white py-2.5 rounded-xl text-sm font-bold shadow-sm shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 font-sans group/btn border border-transparent"
                     title="Mark call done / Log outcome"
                 >
                     <FontAwesomeIcon icon={faCheckCircle} className="group-hover/btn:scale-110 transition-transform" />
@@ -136,7 +136,7 @@ const ClientCard: React.FC<ClientCardProps> = ({ client, onEdit, onDelete, onMar
                 </button>
                 <button
                     onClick={() => onDelete(client.id)}
-                    className="w-12 flex items-center justify-center bg-white border border-slate-200 hover:bg-red-50 hover:border-red-200 hover:text-red-600 text-slate-400 rounded-xl transition-all shadow-sm active:scale-95"
+                    className="w-12 h-[42px] flex items-center justify-center bg-white border border-slate-200 hover:bg-red-50 hover:border-red-200 hover:text-red-600 text-slate-400 rounded-xl transition-all shadow-sm active:scale-95"
                     title="Delete Client"
                 >
                     <FontAwesomeIcon icon={faTrash} />
