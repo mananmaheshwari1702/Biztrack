@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 import { useClients, useDueClients } from '../hooks/useClients';
 import { useAuth } from '../context/AuthContext'; // Added import
 import { useToast } from '../context/ToastContext';
@@ -286,40 +286,81 @@ const Clients: React.FC = () => {
         e.target.value = '';
     };
 
-    const [searchParams] = useSearchParams(); // Needs import
+
+    const [searchParams] = useSearchParams();
+    const location = useLocation();
+    const navigate = useNavigate();
     const databaseRef = React.useRef<HTMLDivElement>(null);
     const searchInputRef = React.useRef<HTMLInputElement>(null); // For auto-focus
     const [highlightedClientId, setHighlightedClientId] = useState<string | null>(null);
+    const appliedSearchParamRef = React.useRef<string | null>(null); // Track URL param sync state
 
-    // Auto-Search & Scroll Logic
+    // Clean up URL on page load/refresh - remove search param from URL
+    // This runs once after initial mount to clean the URL while preserving the search functionality
+    const hasCleanedUrlRef = React.useRef(false);
     React.useEffect(() => {
         const searchParam = searchParams.get('search');
-        const timeoutIds: ReturnType<typeof setTimeout>[] = [];
+        if (searchParam && !hasCleanedUrlRef.current) {
+            hasCleanedUrlRef.current = true;
+            // Use setTimeout to ensure the search is applied first, then clean URL
+            setTimeout(() => {
+                navigate('/clients', { replace: true });
+            }, 200);
+        }
+    }, []); // Empty dependency - only run once on mount
 
-        if (searchParam) {
-            setSearchQuery(searchParam);
-            setFilterType('All'); // Reset filter to ensure visibility
+    // Scroll to database section on navigation with search param
+    // Uses location.search to detect fresh navigation
+    const prevLocationSearch = React.useRef<string>('');
+    React.useEffect(() => {
+        const searchParam = searchParams.get('search');
 
-            // Scroll to database section
-            timeoutIds.push(setTimeout(() => {
-                databaseRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                searchInputRef.current?.focus(); // Auto-focus search input
-            }, 100));
+        // Only scroll if this is a new navigation (location.search changed) and has search param
+        if (searchParam && location.search !== prevLocationSearch.current) {
+            prevLocationSearch.current = location.search;
 
-            // Find match for highlighting
-            const match = clients.find(c => c.clientName.toLowerCase() === searchParam.toLowerCase());
-            if (match) {
-                setHighlightedClientId(match.id);
-                // Remove highlight after 2 seconds
-                timeoutIds.push(setTimeout(() => setHighlightedClientId(null), 2000));
-            }
+            // Use requestAnimationFrame to ensure DOM is ready
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    databaseRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    searchInputRef.current?.focus();
+                }, 100);
+            });
         }
 
-        // Cleanup timeouts on unmount
-        return () => {
-            timeoutIds.forEach(id => clearTimeout(id));
-        };
-    }, [searchParams, clients]); // Depend on clients to find match
+        // Reset tracking when there's no search param in URL
+        if (!location.search) {
+            prevLocationSearch.current = '';
+        }
+    }, [location.search, searchParams]);
+
+    // Sync searchQuery from URL params - only once per unique param value
+    React.useEffect(() => {
+        const searchParam = searchParams.get('search');
+
+        if (searchParam && appliedSearchParamRef.current !== searchParam) {
+            appliedSearchParamRef.current = searchParam;
+            setSearchQuery(searchParam);
+            setFilterType('All');
+        }
+
+        if (!searchParam) {
+            appliedSearchParamRef.current = null;
+        }
+    }, [searchParams]);
+
+    // Separate effect for client highlighting (depends on clients loading)
+    React.useEffect(() => {
+        const searchParam = searchParams.get('search');
+        if (searchParam && clients.length > 0) {
+            const match = clients.find(c => c.clientName.toLowerCase() === searchParam.toLowerCase());
+            if (match && highlightedClientId !== match.id) {
+                setHighlightedClientId(match.id);
+                const timerId = setTimeout(() => setHighlightedClientId(null), 2000);
+                return () => clearTimeout(timerId);
+            }
+        }
+    }, [clients, searchParams, highlightedClientId]);
 
     const handleImportComplete = () => {
         setIsImportModalOpen(false);
