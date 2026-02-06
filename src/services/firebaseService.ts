@@ -47,7 +47,9 @@ export const firebaseService = {
 
             // Prepare Search Fields
             const clientNameLower = client.clientName.toLowerCase();
-            const mobileDigits = client.mobile ? client.mobile.replace(/\D/g, '') : '';
+            // Use phoneNumber (local part) to avoid country code prefix issues
+            const phoneSource = client.phoneNumber || client.mobile || '';
+            const mobileDigits = phoneSource.replace(/\D/g, '');
             const mobileReverse = mobileDigits.split('').reverse().join('');
 
             const clientWithSearch = {
@@ -72,8 +74,10 @@ export const firebaseService = {
             if (client.clientName) {
                 updates.clientNameLower = client.clientName.toLowerCase();
             }
-            if (client.mobile) {
-                const digits = client.mobile.replace(/\D/g, '');
+            // Use phoneNumber (local part) to avoid country code prefix issues
+            const phoneSource = client.phoneNumber || client.mobile;
+            if (phoneSource) {
+                const digits = phoneSource.replace(/\D/g, '');
                 updates.mobileDigits = digits;
                 updates.mobileReverse = digits.split('').reverse().join('');
             }
@@ -131,7 +135,9 @@ export const firebaseService = {
                     const ref = doc(db, 'users', userId, 'clients', clientId);
 
                     const clientNameLower = client.clientName ? client.clientName.toLowerCase() : '';
-                    const mobileDigits = client.mobile ? client.mobile.replace(/\D/g, '') : '';
+                    // Use phoneNumber (local part) to avoid country code prefix issues
+                    const phoneSource = client.phoneNumber || client.mobile || '';
+                    const mobileDigits = phoneSource.replace(/\D/g, '');
                     const mobileReverse = mobileDigits.split('').reverse().join('');
 
                     const clientWithSearch = {

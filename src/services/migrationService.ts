@@ -4,7 +4,8 @@ import { db } from '../lib/firebase';
 import type { Client } from '../types';
 import { logger } from '../utils/logger';
 
-const MIGRATION_KEY = 'biztrack_migration_v1_clientNameLower';
+// V3: Force recalculate mobileDigits using phoneNumber (local number without country code)
+const MIGRATION_KEY = 'biztrack_migration_v3_phone_local';
 
 export const runDataMigration = async (userId: string) => {
     // Check if migration already ran
@@ -13,20 +14,17 @@ export const runDataMigration = async (userId: string) => {
     }
 
     try {
-        console.log('Starting client name normalization migration...');
+        console.log('Starting client search index migration (v3)...');
         const clientsRef = collection(db, 'users', userId, 'clients');
         const snapshot = await getDocs(clientsRef);
 
         const batch = writeBatch(db);
         let count = 0;
-        let batchCount = 0;
 
         snapshot.docs.forEach(docSnap => {
             const client = docSnap.data() as Client;
-
-            // Check if needs update (clientNameLower OR mobile fields)
+            const updates: Record<string, string> = {};
             let needsUpdate = false;
-            const updates: any = {};
 
             // Name Normalization
             if (!client.clientNameLower && client.clientName) {
@@ -34,19 +32,22 @@ export const runDataMigration = async (userId: string) => {
                 needsUpdate = true;
             }
 
-            // Phone Normalization
-            if ((!client.mobileDigits || !client.mobileReverse) && client.mobile) {
-                const digits = client.mobile.replace(/\D/g, '');
-                updates.mobileDigits = digits;
-                updates.mobileReverse = digits.split('').reverse().join('');
-                needsUpdate = true;
+            // Phone Normalization - ALWAYS recalculate using phoneNumber (local part)
+            const phoneSource = client.phoneNumber || client.mobile;
+            if (phoneSource) {
+                const correctDigits = phoneSource.replace(/\D/g, '');
+                // Update if missing OR if current value doesn't match (was using wrong source)
+                if (!client.mobileDigits || client.mobileDigits !== correctDigits) {
+                    updates.mobileDigits = correctDigits;
+                    updates.mobileReverse = correctDigits.split('').reverse().join('');
+                    needsUpdate = true;
+                }
             }
 
             if (needsUpdate) {
                 const ref = doc(db, 'users', userId, 'clients', docSnap.id);
                 batch.update(ref, updates);
                 count++;
-                batchCount++;
             }
         });
 
@@ -58,7 +59,7 @@ export const runDataMigration = async (userId: string) => {
         }
 
         // Mark as done
-        localStorage.setItem('biztrack_migration_v2_search_indexes', 'true');
+        localStorage.setItem(MIGRATION_KEY, 'true');
 
     } catch (error) {
         logger.error('Migration failed:', error);

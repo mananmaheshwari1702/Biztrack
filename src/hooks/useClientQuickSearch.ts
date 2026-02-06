@@ -33,8 +33,7 @@ export const useClientQuickSearch = () => {
 
             // Parallel Queries to support Name OR Phone
             const searchLower = searchTerm.toLowerCase();
-            const searchDigits = searchTerm.replace(/\D/g, ''); // Extract digits
-            const searchReverse = searchDigits.split('').reverse().join('');
+            const searchDigits = searchTerm.replace(/\D/g, ''); // Extract digits only
 
             const queries = [];
 
@@ -48,9 +47,9 @@ export const useClientQuickSearch = () => {
             );
             queries.push(getDocs(nameQuery));
 
-            // 2. Phone Query (Prefix & Suffix/Reverse) - Only if we have digits
+            // 2. Phone Query (Prefix ONLY) - Only if we have digits
             if (searchDigits.length > 2) { // Minimum 3 digits to search phone
-                // Prefix Search (e.g. "9876")
+                // Prefix Search (e.g. "9876" or full "9876543210")
                 const phonePrefixQuery = query(
                     clientsRef,
                     where('mobileDigits', '>=', searchDigits),
@@ -59,14 +58,7 @@ export const useClientQuickSearch = () => {
                 );
                 queries.push(getDocs(phonePrefixQuery));
 
-                // Suffix Search (e.g. "4321" -> matches reverse "1234...")
-                const phoneSuffixQuery = query(
-                    clientsRef,
-                    where('mobileReverse', '>=', searchReverse),
-                    where('mobileReverse', '<=', searchReverse + '\uf8ff'),
-                    limit(5)
-                );
-                queries.push(getDocs(phoneSuffixQuery));
+                // NOTE: Suffix/Last-Digits search (mobileReverse) is intentionally removed per user request.
             }
 
             // Execute all queries
