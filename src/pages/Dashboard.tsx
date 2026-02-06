@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDashboardData } from '../hooks/useDashboardData';
+import { useAuth } from '../context/AuthContext';
 import { useClients } from '../hooks/useClients';
 import StatsCard from '../components/dashboard/StatsCard';
 import OutreachList from '../components/dashboard/OutreachList';
@@ -30,6 +31,17 @@ const Dashboard: React.FC = () => {
         loadingMoreDue,
         loadingMoreTasks
     } = useDashboardData();
+    const { currentUser } = useAuth(); // Standard import
+
+    // Data Migration: Normalize Client Names (Runs once)
+    React.useEffect(() => {
+        if (currentUser) {
+            // Lazy load migration service
+            import('../services/migrationService').then(mod => {
+                mod.runDataMigration(currentUser.uid);
+            });
+        }
+    }, [currentUser]);
 
     const { updateClient } = useClients();
     const [selectedClientForOutcome, setSelectedClientForOutcome] = useState<Client | null>(null);

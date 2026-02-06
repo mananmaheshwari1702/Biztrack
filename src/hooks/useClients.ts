@@ -27,9 +27,14 @@ export const useClients = (
     }
 
     // Search (Prefix)
+    // Search (Prefix)
+    // REFACTOR: Use clientNameLower for case-insensitive search
+    // This relies on the migrationService to have populated this field.
     if (searchQuery) {
-        constraints.push(where('clientName', '>=', searchQuery));
-        constraints.push(where('clientName', '<=', searchQuery + '\uf8ff'));
+        const searchLower = searchQuery.toLowerCase().trim();
+        constraints.push(where('clientNameLower', '>=', searchLower));
+        constraints.push(where('clientNameLower', '<=', searchLower + '\uf8ff'));
+        constraints.push(orderBy('clientNameLower', 'asc'));
     } else {
         // Sort
         if (sortBy === 'clientName') {
@@ -207,11 +212,10 @@ export const useClients = (
     };
 };
 
-export const useDueClients = (page: number = 1, pageSize: number = 20) => {
+// Specialized hook for "Due Today & Overdue" widget
+// Query: status == 'Active' && nextFollowUpDate <= endOfToday
+export const useDueClients = (page: number = 1, pageSize: number = 20, searchQuery: string = '') => {
     const { currentUser } = useAuth();
-    // Specialized hook for "Due Today & Overdue" widget
-    // Query: status == 'Active' && nextFollowUpDate <= endOfToday
-    // Sort client-side to avoid composite index requirement
 
     // Use end of today in UTC for comparison
     // This ensures we catch all clients with dates <= today regardless of timezone
@@ -225,14 +229,34 @@ export const useDueClients = (page: number = 1, pageSize: number = 20) => {
 
     // IMPORTANT: Only use single field query to avoid composite index requirement
     // Query only by date, filter status client-side
-    const constraints: import('firebase/firestore').QueryConstraint[] = [
-        where('nextFollowUpDate', '<=', endOfTodayUtc)
-    ];
+    // OR Query by Name (if searching), then filter Date and Status client-side
 
-    // Fetch Total Count (server-side, approximation based on Date only to avoid index error)
-    // Note: This count assumes all due items are relevant. Since we can't filter Status=Active server-side
-    // without an index, this is the best approximation for "Total Candidates".
-    // Alternatively, for small datasets, fetching all IDs might be better, but count is cheaper.
+    // Determine Query Strategy
+    const isSearch = !!searchQuery.trim();
+    const searchLower = searchQuery.toLowerCase().trim();
+
+    const constraints: import('firebase/firestore').QueryConstraint[] = useMemo(() => {
+        if (isSearch) {
+            // SEARCH STRATEGY:
+            // Query: clientNameLower >= query
+            // Filter: status == 'Active' && nextFollowUpDate <= today
+            return [
+                where('clientNameLower', '>=', searchLower),
+                where('clientNameLower', '<=', searchLower + '\uf8ff'),
+                orderBy('clientNameLower', 'asc')
+            ];
+        } else {
+            // DEFAULT STRATEGY:
+            // Query: nextFollowUpDate <= endOfToday
+            // Filter: status == 'Active'
+            return [
+                where('nextFollowUpDate', '<=', endOfTodayUtc),
+                orderBy('nextFollowUpDate', 'asc') // Ensure sorted by date
+            ];
+        }
+    }, [isSearch, searchLower, endOfTodayUtc]);
+
+    // Fetch Total Count
     const [totalCount, setTotalCount] = useState(0);
 
     useEffect(() => {
@@ -249,34 +273,55 @@ export const useDueClients = (page: number = 1, pageSize: number = 20) => {
         };
         fetchCount();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentUser, endOfTodayUtc]); // Re-run daily
+    }, [currentUser, endOfTodayUtc, isSearch, searchLower]); // Re-run when query changes
 
     // Fetch Data
-    const fetchLimit = page * pageSize; // Fetch accumulated pages
+    // If searching, we fetch MORE items because many might not be "Due Today"
+    // We need to fetch enough candidates to fill the page after filtering
+    const effectiveFetchLimit = isSearch ? (page * pageSize * 5) : (page * pageSize);
 
     const result = useFirestoreQuery<Client>(
         'clients',
         constraints,
-        fetchLimit, // Dynamic limit based on page
-        ['due-clients', endOfTodayUtc.substring(0, 10), page] // Include page in key
+        effectiveFetchLimit,
+        ['due-clients', endOfTodayUtc.substring(0, 10), page, isSearch, searchLower] // Include search params in key
     );
 
-    // Filter for Active status AND sort client-side by nextFollowUpDate
+    // Filter/Sort Logic
     const filteredAndSortedData = useMemo(() => {
-        return result.data
-            .filter(client => client.status === 'Active')
-            .sort((a, b) => {
+        let processed = result.data.filter(client => client.status === 'Active');
+
+        // If Searching, we still need to filter by Date (since we queried by Name)
+        if (isSearch) {
+            processed = processed.filter(client => {
+                if (!client.nextFollowUpDate) return false;
+                // Simple string comparison for ISO dates works
+                return client.nextFollowUpDate <= endOfTodayUtc;
+            });
+            // And we should sort by Date for consistency with default view?
+            // Or keep name sort? Default view is sorted by date.
+            // Let's sort by date to match the "Due" context.
+            processed.sort((a, b) => {
                 const dateA = new Date(a.nextFollowUpDate || 0).getTime();
                 const dateB = new Date(b.nextFollowUpDate || 0).getTime();
                 return dateA - dateB;
             });
-    }, [result.data]);
+        } else {
+            // Default view: already queried by date, but need to ensure sort if not guaranteed (FireStore guarantees it if orderBy is used)
+            // We added orderBy('nextFollowUpDate') so it should be good.
+            // But existing code did manual sort, let's keep it safe.
+            processed.sort((a, b) => {
+                const dateA = new Date(a.nextFollowUpDate || 0).getTime();
+                const dateB = new Date(b.nextFollowUpDate || 0).getTime();
+                return dateA - dateB;
+            });
+        }
 
-    // Slice for current page (client-side pagination)
+        return processed;
+    }, [result.data, isSearch, endOfTodayUtc]);
+
+    // Slice for pagination
     const paginatedData = useMemo(() => {
-        // Since we fetch accumulated (0 to page*size), we just take the last pageSize items
-        // Wait, regular pagination should be slice((p-1)*size, p*size)
-        // Check if fetched data covers the range.
         const startIndex = (page - 1) * pageSize;
         return filteredAndSortedData.slice(startIndex, startIndex + pageSize);
     }, [filteredAndSortedData, page, pageSize]);
@@ -284,7 +329,7 @@ export const useDueClients = (page: number = 1, pageSize: number = 20) => {
     return {
         ...result,
         data: paginatedData, // Return only current page
-        allDueClients: filteredAndSortedData, // Return all fetched for reference if needed
-        totalFetched: totalCount // Total matching Date query (approx)
+        allDueClients: filteredAndSortedData, // Return all fetched
+        totalFetched: isSearch ? filteredAndSortedData.length : totalCount // For search, true server count is hard, use client count
     };
 };

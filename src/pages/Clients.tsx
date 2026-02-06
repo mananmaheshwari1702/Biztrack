@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useClients, useDueClients } from '../hooks/useClients';
+import { useAuth } from '../context/AuthContext'; // Added import
 import { useToast } from '../context/ToastContext';
 import type { Client, ClientType } from '../types';
 import ClientCard from '../components/clients/ClientCard';
@@ -26,6 +27,7 @@ const Clients: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [sortField, setSortField] = useState<'clientName' | 'nextFollowUpDate'>('nextFollowUpDate');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+    const [followUpSearchQuery, setFollowUpSearchQuery] = useState(''); // Moved up for useDueClients
 
     // Cards Pagination (kept separate, MUST be before useDueClients)
     const [currentCardsPage, setCurrentCardsPage] = useState(1);
@@ -44,17 +46,25 @@ const Clients: React.FC = () => {
         bulkUpdateClients,
     } = useClients(filterType, searchQuery, sortField, currentPage, ITEMS_PER_PAGE);
 
-    // Separate hook for due clients (optimized query), now with server-side pagination
+    // Separate hook for due clients (optimized query), now with server-side pagination & search
     const {
-        data: dueClientsPageData,
-        // loading: dueLoading, // Unused for now
+        data: dueClients, // Data is now already filtered/sorted/paginated by hook
+        // loading: dueLoading,
         totalFetched: totalDueCount
-    } = useDueClients(currentCardsPage, CARDS_PER_PAGE);
+    } = useDueClients(currentCardsPage, CARDS_PER_PAGE, followUpSearchQuery);
 
     const { success, error } = useToast();
     const [selectedClientIds, setSelectedClientIds] = useState<Set<string>>(new Set());
-    // filterType, searchQuery, sortField were here previously
-    const [followUpSearchQuery, setFollowUpSearchQuery] = useState(''); // New state for Follow-Ups search
+
+    // Data Migration: Ensure client names are normalized on this page too
+    const { currentUser } = useAuth();
+    React.useEffect(() => {
+        if (currentUser) {
+            import('../services/migrationService').then(mod => {
+                mod.runDataMigration(currentUser.uid);
+            });
+        }
+    }, [currentUser]);
 
     // Modal States
     const [isClientModalOpen, setIsClientModalOpen] = useState(false);
@@ -75,15 +85,7 @@ const Clients: React.FC = () => {
     // REMOVED DUPLICATE Cards Pagination Logic (Moved to top)
     // Filter & Sort Logic
     // Dashboard Logic: Due Today & Overdue - Now uses optimized server query via useDueClients hook
-    // Filtered Due Clients (Follow-Ups Search) works on the currently fetched page
-    const paginatedDueClients = useMemo(() => {
-        if (!followUpSearchQuery.trim()) return dueClientsPageData;
-        const query = followUpSearchQuery.toLowerCase();
-        return dueClientsPageData.filter(c =>
-            c.clientName.toLowerCase().includes(query) ||
-            c.mobile.includes(query)
-        );
-    }, [dueClientsPageData, followUpSearchQuery]);
+
 
     // Cards Pagination Logic (Total pages based on server total)
     const totalCardPages = Math.ceil(totalDueCount / CARDS_PER_PAGE);
@@ -390,8 +392,8 @@ const Clients: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {paginatedDueClients.length > 0 ? (
-                        paginatedDueClients.map(client => (
+                    {dueClients.length > 0 ? (
+                        dueClients.map(client => (
                             <ClientCard
                                 key={client.id}
                                 client={client}

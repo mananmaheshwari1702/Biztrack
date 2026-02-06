@@ -41,6 +41,9 @@ export interface Task {
 export interface Client {
   id: string;
   clientName: string;
+  clientNameLower?: string; // Normalized for search
+  mobileDigits?: string;    // Normalized digits (no spaces/dashes)
+  mobileReverse?: string;   // Reversed digits (for suffix search)
   profileImage?: string; // New
   company?: string;
   mobile: string;

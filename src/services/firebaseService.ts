@@ -44,7 +44,19 @@ export const firebaseService = {
     async addClient(userId: string, client: Client): Promise<void> {
         try {
             const clientRef = doc(db, 'users', userId, 'clients', client.id);
-            await setDoc(clientRef, client);
+
+            // Prepare Search Fields
+            const clientNameLower = client.clientName.toLowerCase();
+            const mobileDigits = client.mobile ? client.mobile.replace(/\D/g, '') : '';
+            const mobileReverse = mobileDigits.split('').reverse().join('');
+
+            const clientWithSearch = {
+                ...client,
+                clientNameLower,
+                mobileDigits,
+                mobileReverse
+            };
+            await setDoc(clientRef, clientWithSearch);
         } catch (error) {
             logger.error('Error adding client:', error);
             throw error;
@@ -54,7 +66,19 @@ export const firebaseService = {
     async updateClient(userId: string, client: Client): Promise<void> {
         try {
             const clientRef = doc(db, 'users', userId, 'clients', client.id);
-            await setDoc(clientRef, client, { merge: true });
+            const updates = { ...client };
+
+            // Update Search Fields
+            if (client.clientName) {
+                updates.clientNameLower = client.clientName.toLowerCase();
+            }
+            if (client.mobile) {
+                const digits = client.mobile.replace(/\D/g, '');
+                updates.mobileDigits = digits;
+                updates.mobileReverse = digits.split('').reverse().join('');
+            }
+
+            await setDoc(clientRef, updates, { merge: true });
         } catch (error) {
             logger.error('Error updating client:', error);
             throw error;
@@ -105,7 +129,19 @@ export const firebaseService = {
                 chunk.forEach(client => {
                     const clientId = client.id || crypto.randomUUID();
                     const ref = doc(db, 'users', userId, 'clients', clientId);
-                    batch.set(ref, { ...client, id: clientId }, { merge: true });
+
+                    const clientNameLower = client.clientName ? client.clientName.toLowerCase() : '';
+                    const mobileDigits = client.mobile ? client.mobile.replace(/\D/g, '') : '';
+                    const mobileReverse = mobileDigits.split('').reverse().join('');
+
+                    const clientWithSearch = {
+                        ...client,
+                        id: clientId,
+                        clientNameLower,
+                        mobileDigits,
+                        mobileReverse
+                    };
+                    batch.set(ref, clientWithSearch, { merge: true });
                 });
                 await batch.commit();
             }
