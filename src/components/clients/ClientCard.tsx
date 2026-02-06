@@ -27,12 +27,18 @@ const ClientCard: React.FC<ClientCardProps> = ({ client, onEdit, onDelete, onMar
     return (
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-primary/20 transition-all duration-300 flex flex-col h-full group relative overflow-hidden ring-0 ring-primary/0 hover:ring-1 hover:ring-primary/10">
             {/* Top Right Actions - Edit */}
+            {/* 
+                Touch-aware visibility:
+                - On touch devices (no hover capability): button is always visible with subtle styling
+                - On desktop (hover capable devices): button appears on hover/focus
+                Using CSS @media (hover: hover) and (pointer: fine) for detection
+            */}
             <button
                 onClick={(e) => {
                     e.stopPropagation();
                     onEdit(client);
                 }}
-                className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center bg-white/80 backdrop-blur-sm border border-slate-200 rounded-lg text-slate-400 hover:text-primary hover:border-primary/30 hover:bg-blue-50 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 shadow-sm"
+                className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center bg-white/80 backdrop-blur-sm border border-slate-200 rounded-lg text-slate-400 hover:text-primary hover:border-primary/30 hover:bg-blue-50 transition-all shadow-sm focus:opacity-100 edit-button-touch-aware"
                 title="Edit Client"
             >
                 <FontAwesomeIcon icon={faEdit} className="text-xs" />

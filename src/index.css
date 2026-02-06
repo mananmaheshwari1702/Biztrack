@@ -125,4 +125,30 @@
       transform: scale(1);
     }
   }
+
+  /* Touch-aware Edit Button Visibility
+     - Touch devices (tablet/mobile): Always visible with subtle styling
+     - Desktop (pointer devices with hover): Hidden by default, shown on hover/focus
+  */
+  .edit-button-touch-aware {
+    /* Default: visible for touch devices */
+    opacity: 0.7;
+  }
+
+  .edit-button-touch-aware:hover,
+  .edit-button-touch-aware:focus {
+    opacity: 1;
+  }
+
+  /* On devices with fine pointer and hover capability (desktop), use hover-to-reveal */
+  @media (hover: hover) and (pointer: fine) {
+    .edit-button-touch-aware {
+      opacity: 0;
+    }
+
+    .group:hover .edit-button-touch-aware,
+    .edit-button-touch-aware:focus {
+      opacity: 1;
+    }
+  }
 }
